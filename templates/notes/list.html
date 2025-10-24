@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Notities — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+  <h1>Notities</h1>
+  <ul>
+    {% for n in notes %}
+      <li>{{ n.title }}</li>
+    {% empty %}
+      <li>Geen notities</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
