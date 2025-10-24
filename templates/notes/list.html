@@ -5,7 +5,7 @@
   <p><a href="{% url 'notes:new' %}">Nieuwe notitie</a></p>
   <ul>
     {% for n in notes %}
-      <li>{{ n.title }}</li>
+      <li><a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a></li>
     {% empty %}
       <li>Geen notities</li>
     {% endfor %}
