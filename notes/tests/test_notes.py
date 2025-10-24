@@ -1,9 +1,11 @@
 """
 Tests voor de notes-app. Gebruikt fixtures/notes.json.
 """
+
 from django.test import TestCase
 from django.urls import reverse
 from notes.models import Note
+
 
 class NotesTests(TestCase):
     fixtures = ["notes.json"]  # geladen uit notes/fixtures/

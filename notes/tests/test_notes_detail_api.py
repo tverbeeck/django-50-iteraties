@@ -1,9 +1,11 @@
 """
 Tests voor de detailpagina en het JSON-list endpoint.
 """
+
 from django.test import TestCase
 from django.urls import reverse
 from notes.models import Note
+
 
 class NotesDetailAndApiTests(TestCase):
     fixtures = ["notes.json"]
@@ -24,6 +26,7 @@ class NotesDetailAndApiTests(TestCase):
         self.assertGreaterEqual(len(data), 2)
         self.assertIn("title", data[0])
 
+
 class NotesFormNormalizationTests(TestCase):
     def test_title_is_normalized_and_validated(self):
         # Post met extra spaties en korte titel checken
@@ -33,6 +36,8 @@ class NotesFormNormalizationTests(TestCase):
         self.assertContains(resp, "minstens 3 tekens", status_code=200)
 
         # Nu een geldige titel met veel spaties:
-        resp = self.client.post(url, {"title": "  Hello   World  ", "body": ""}, follow=True)
+        resp = self.client.post(
+            url, {"title": "  Hello   World  ", "body": ""}, follow=True
+        )
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(Note.objects.filter(title="Hello World").exists())

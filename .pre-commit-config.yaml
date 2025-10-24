@@ -1,0 +1,28 @@
+﻿repos:
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: ^docs/
+      - id: trailing-whitespace
+        exclude: ^docs/
+      - id: check-yaml
+
+  - repo: local
+    hooks:
+      - id: build-pdoc-docs
+        name: Build pdoc docs
+        entry: python docs/build_docs.py
+        language: system
+        pass_filenames: false

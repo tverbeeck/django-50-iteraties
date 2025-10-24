@@ -6,7 +6,9 @@ Wiki-notes:
 - Landing page en About-pagina, gerenderd met templates.
 - Docstrings worden later gebruikt voor wiki-achtige HTML.
 """
+
 from django.shortcuts import render
+
 
 def index(request):
     """
@@ -14,9 +16,9 @@ def index(request):
     """
     return render(request, "home/index.html")
 
+
 def about(request):
     """
     Eenvoudige About-pagina.
     """
     return render(request, "home/about.html")
-

@@ -4,12 +4,13 @@ notes.views
 
 Views voor het notitie-overzicht.
 """
+
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Note
 from django.contrib import messages
 from .forms import NoteForm
-from .models import Note
 from django.http import JsonResponse
+
 
 def api_list_notes(request):
     """
@@ -40,6 +41,7 @@ def create_note(request):
         form = NoteForm()
     return render(request, "notes/form.html", {"form": form})
 
+
 def list_notes(request):
     """
     Toon een eenvoudige lijst met notities.
@@ -47,11 +49,10 @@ def list_notes(request):
     notes = Note.objects.all()
     return render(request, "notes/list.html", {"notes": notes})
 
+
 def detail_note(request, pk: int):
     """
     Detailpagina voor één notitie.
     """
     note = get_object_or_404(Note, pk=pk)
     return render(request, "notes/detail.html", {"note": note})
-
-

@@ -3,7 +3,9 @@ Globale contextvariabelen voor templates.
 
 Deze docstrings worden later gebruikt om wiki-achtige HTML te genereren.
 """
+
 from datetime import date
+
 
 def site_meta(request):
     """

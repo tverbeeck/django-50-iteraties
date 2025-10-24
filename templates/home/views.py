@@ -9,6 +9,7 @@ Wiki-notes:
 
 from django.shortcuts import render
 
+
 def index(request):
     """
     index(request) -> HttpResponse
@@ -19,6 +20,7 @@ def index(request):
         HttpResponse: de gerenderde HTML.
     """
     return render(request, "home/index.html")
+
 
 def about(request):
     """
