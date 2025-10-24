@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Pagina niet gevonden — {{ SITE_NAME }}{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/errors.css' %}">
+<div class="error-wrap">
   <h1>Pagina niet gevonden (404)</h1>
-  <p>De opgevraagde pagina bestaat niet.</p>
+  <p>De gevraagde pagina bestaat niet of is verplaatst.</p>
+  <p><a href="{% url 'home-index' %}">Terug naar de homepagina</a></p>
+</div>
 {% endblock %}

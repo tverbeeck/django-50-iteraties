@@ -40,6 +40,9 @@
                     <a class="variable" href="#DATABASE_URL">DATABASE_URL</a>
             </li>
             <li>
+                    <a class="variable" href="#STATICFILES_STORAGE">STATICFILES_STORAGE</a>
+            </li>
+            <li>
                     <a class="variable" href="#CSRF_COOKIE_SECURE">CSRF_COOKIE_SECURE</a>
             </li>
             <li>
@@ -93,13 +96,19 @@
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="k">if</span> <span class="n">DATABASE_URL</span><span class="p">:</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="n">DATABASES</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dj_database_url</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">DATABASE_URL</span><span class="p">,</span> <span class="n">conn_max_age</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="c1"># Security aanscherpen</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="n">CSRF_COOKIE_SECURE</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="n">SESSION_COOKIE_SECURE</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="n">SECURE_HSTS_SECONDS</span> <span class="o">=</span> <span class="mi">31536000</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="n">SECURE_HSTS_INCLUDE_SUBDOMAINS</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="n">SECURE_HSTS_PRELOAD</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="n">SECURE_SSL_REDIRECT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SECURE_SSL_REDIRECT&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="c1"># --- WhiteNoise voor static files in productie ---</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="n">MIDDLEWARE</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;whitenoise.middleware.WhiteNoiseMiddleware&quot;</span><span class="p">)</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="n">STATICFILES_STORAGE</span> <span class="o">=</span> <span class="s2">&quot;whitenoise.storage.CompressedManifestStaticFilesStorage&quot;</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="c1"># -------------------------------------------------</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="c1"># Security aanscherpen</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="n">CSRF_COOKIE_SECURE</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="n">SESSION_COOKIE_SECURE</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="n">SECURE_HSTS_SECONDS</span> <span class="o">=</span> <span class="mi">31536000</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="n">SECURE_HSTS_INCLUDE_SUBDOMAINS</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="n">SECURE_HSTS_PRELOAD</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="n">SECURE_SSL_REDIRECT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SECURE_SSL_REDIRECT&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
 </span></pre></div>
 
 
@@ -119,7 +128,7 @@
                 <section id="ALLOWED_HOSTS">
                     <div class="attr variable">
             <span class="name">ALLOWED_HOSTS</span>        =
-<span class="default_value">[&#39;example.com&#39;]</span>
+<span class="default_value">[&#39;127.0.0.1&#39;, &#39;localhost&#39;]</span>
 
         
     </div>
@@ -136,6 +145,18 @@
         
     </div>
     <a class="headerlink" href="#DATABASE_URL"></a>
+    
+    
+
+                </section>
+                <section id="STATICFILES_STORAGE">
+                    <div class="attr variable">
+            <span class="name">STATICFILES_STORAGE</span>        =
+<span class="default_value">&#39;whitenoise.storage.CompressedManifestStaticFilesStorage&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#STATICFILES_STORAGE"></a>
     
     
 
@@ -203,7 +224,7 @@
                 <section id="SECURE_SSL_REDIRECT">
                     <div class="attr variable">
             <span class="name">SECURE_SSL_REDIRECT</span>        =
-<span class="default_value">True</span>
+<span class="default_value">False</span>
 
         
     </div>

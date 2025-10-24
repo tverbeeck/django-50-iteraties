@@ -13,6 +13,12 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
     DATABASES["default"] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 
+
+# --- WhiteNoise voor static files in productie ---
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# -------------------------------------------------
+
 # Security aanscherpen
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True

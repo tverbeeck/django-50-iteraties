@@ -1,0 +1,4 @@
+/* Minimalistische styling voor foutpagina's */
+.error-wrap { max-width: 720px; margin: 10vh auto; padding: 1.5rem; text-align: center; }
+.error-wrap h1 { margin: 0 0 .5rem; font-size: 2rem; }
+.error-wrap p { opacity: .85; }

@@ -230,7 +230,7 @@ Leest optioneel variabelen uit .env via python-dotenv.</p>
                 <section id="SECRET_KEY">
                     <div class="attr variable">
             <span class="name">SECRET_KEY</span>        =
-<span class="default_value">&#39;dev-insecure-key-change-me&#39;</span>
+<span class="default_value">$SECRET_KEY</span>
 
         
     </div>
@@ -254,7 +254,7 @@ Leest optioneel variabelen uit .env via python-dotenv.</p>
                 <section id="ALLOWED_HOSTS">
                     <div class="attr variable">
             <span class="name">ALLOWED_HOSTS</span>        =
-<span class="default_value">[]</span>
+<span class="default_value">[&#39;127.0.0.1&#39;, &#39;localhost&#39;]</span>
 
         
     </div>
@@ -280,7 +280,7 @@ Leest optioneel variabelen uit .env via python-dotenv.</p>
                     <div class="attr variable">
             <span class="name">MIDDLEWARE</span>        =
 <input id="MIDDLEWARE-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="MIDDLEWARE-view-value"></label><span class="default_value">[&#39;django.middleware.security.SecurityMiddleware&#39;, &#39;django.contrib.sessions.middleware.SessionMiddleware&#39;, &#39;django.middleware.locale.LocaleMiddleware&#39;, &#39;django.middleware.common.CommonMiddleware&#39;, &#39;django.middleware.csrf.CsrfViewMiddleware&#39;, &#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;, &#39;django.contrib.messages.middleware.MessageMiddleware&#39;, &#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;]</span>
+            <label class="view-value-button pdoc-button" for="MIDDLEWARE-view-value"></label><span class="default_value">[&#39;django.middleware.security.SecurityMiddleware&#39;, &#39;whitenoise.middleware.WhiteNoiseMiddleware&#39;, &#39;django.contrib.sessions.middleware.SessionMiddleware&#39;, &#39;django.middleware.locale.LocaleMiddleware&#39;, &#39;django.middleware.common.CommonMiddleware&#39;, &#39;django.middleware.csrf.CsrfViewMiddleware&#39;, &#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;, &#39;django.contrib.messages.middleware.MessageMiddleware&#39;, &#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;]</span>
 
         
     </div>

@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Serverfout — {{ SITE_NAME }}{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/errors.css' %}">
+<div class="error-wrap">
   <h1>Er ging iets mis (500)</h1>
   <p>Onze excuses — probeer het later opnieuw.</p>
+  <p><a href="{% url 'home-index' %}">Terug naar de homepagina</a></p>
+</div>
 {% endblock %}
