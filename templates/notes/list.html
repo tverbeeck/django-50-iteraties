@@ -2,6 +2,7 @@
 {% block title %}Notities — {{ SITE_NAME }}{% endblock %}
 {% block content %}
   <h1>Notities</h1>
+  <p><a href="{% url 'notes:new' %}">Nieuwe notitie</a></p>
   <ul>
     {% for n in notes %}
       <li>{{ n.title }}</li>

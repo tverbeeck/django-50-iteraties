@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Nieuwe notitie — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+  <h1>Nieuwe notitie</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Opslaan</button>
+    <a href="{% url 'notes:list' %}">Annuleren</a>
+  </form>
+{% endblock %}
