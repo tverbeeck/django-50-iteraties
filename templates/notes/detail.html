@@ -1,15 +1,23 @@
 {% extends "base.html" %}
+{% load static %}
+{% load markdown_extras %}
+
 {% block title %}{{ note.title }} — {{ SITE_NAME }}{% endblock %}
+
 {% block content %}
   <h1>{{ note.title }}</h1>
 
+  <!-- nieuw: laad onze markdown CSS -->
+  <link rel="stylesheet" href="{% static 'css/markdown.css' %}">
+
   {% if note.body %}
-    <p>{{ note.body }}</p>
+    <div class="note-body">
+      {{ note.body|markdownify }}
+    </div>
   {% else %}
     <p><em>Geen inhoud</em></p>
   {% endif %}
 
-  {# toon tags #}
   {% if note.tags.all %}
     <p>
       Tags:

@@ -1,0 +1,69 @@
+/* Basale opmaak voor gerenderde Markdown */
+
+.note-body {
+  line-height: 1.5;
+  max-width: 60ch;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.note-body h1,
+.note-body h2,
+.note-body h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
+}
+
+.note-body p {
+  margin: 0.75rem 0;
+}
+
+.note-body ul,
+.note-body ol {
+  margin: 0.75rem 1.25rem;
+  padding-left: 1.25rem;
+}
+
+.note-body code {
+  background: #f5f2f0;
+  border: 1px solid #e0dcd8;
+  padding: 0 .25rem;
+  font-family: Consolas, monospace;
+  font-size: 0.9rem;
+  border-radius: 4px;
+}
+
+.note-body pre code {
+  display: block;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  line-height: 1.4;
+}
+
+.note-body blockquote {
+  border-left: 4px solid #ccc;
+  padding-left: .75rem;
+  color: #555;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.note-body table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.note-body th,
+.note-body td {
+  border: 1px solid #ddd;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.note-body hr {
+  border: 0;
+  border-top: 1px solid #ddd;
+  margin: 2rem 0;
+}
