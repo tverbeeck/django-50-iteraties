@@ -1,27 +1,26 @@
-"""
-URL configuration for siteproject project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
 from django.contrib import admin
 from django.urls import path, include
-from home.views import index, about
+from home import views as home_views
+
+# Gebruik onze eigen 404-pagina als DEBUG=False in tests
+handler404 = "home.views.custom_404"
 
 urlpatterns = [
+    # Admin
     path("admin/", admin.site.urls),
-    path("", index, name="home-index"),
-    path("about/", about, name="home-about"),
-    path("notes/", include("notes.urls", namespace="notes")),
+    # Dashboard / startpagina
+    # reverse("home") moet werken
+    path("", home_views.home, name="home"),
+    # Klassieke index-url
+    # reverse("home-index") moet werken
+    path("index/", home_views.home, name="home-index"),
+    # About-pagina
+    # reverse("home-about") moet werken
+    path("about/", home_views.about, name="home-about"),
+    # Notes (CRUD + filters + public wiki + API)
+    # reverse("notes:...") moet werken
+    path(
+        "notes/",
+        include(("notes.urls", "notes"), namespace="notes"),
+    ),
 ]

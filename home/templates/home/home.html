@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Dashboard</h1>
+
+  <section>
+    <h2>Recente notities</h2>
+    <ul>
+      {% for note in recent_notes %}
+        <li>
+          <strong>{{ note.title }}</strong>
+          <a href="{% url 'notes:detail' note.pk %}">bekijk</a>
+        </li>
+      {% empty %}
+        <li>Geen notities beschikbaar.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Tags</h2>
+    <ul>
+      {% for t in all_tags %}
+        <li>
+          <a href="{% url 'notes:list' %}?tag={{ t.name|urlencode }}">{{ t.name }}</a>
+        </li>
+      {% empty %}
+        <li>Geen tags beschikbaar.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Publieke wikiweergave</h2>
+    <p>
+      <a href="{% url 'notes:public_list' %}">Publieke wikiweergave »</a>
+    </p>
+  </section>
+
+  <nav>
+    <a href="{% url 'home' %}">Home</a> |
+    <a href="{% url 'home-about' %}">About</a> |
+    <a href="{% url 'home-index' %}">Index</a> |
+    <a href="{% url 'notes:list' %}">Alle notities</a>
+  </nav>
+{% endblock %}

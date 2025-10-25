@@ -12,9 +12,11 @@
     <header>
       <nav style="display: flex; gap: 1rem; align-items: center">
         <strong>{{ SITE_NAME }}</strong>
-        <a href="{% url 'home-index' %}">Home</a>
-        <a href="{% url 'notes:list' %}">Notes</a>
-        <a href="{% url 'home-about' %}">About</a>
+        <a href="{% url 'home' %}">Dashboard</a> |
+        <a href="{% url 'home-about' %}">About</a> |
+        <a href="{% url 'home-index' %}">Index</a> |
+        <a href="{% url 'notes:list' %}">Notities</a> |
+        <a href="{% url 'notes:public_list' %}">Publiek</a>
       </nav>
     </header>
 

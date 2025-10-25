@@ -78,6 +78,9 @@
                                 <a class="function" href="#Note.created_at">created_at</a>
                         </li>
                         <li>
+                                <a class="function" href="#Note.updated_at">updated_at</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#Note.tags">tags</a>
                         </li>
                         <li>
@@ -97,6 +100,12 @@
                         </li>
                         <li>
                                 <a class="function" href="#Note.get_previous_by_created_at">get_previous_by_created_at</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Note.get_next_by_updated_at">get_next_by_updated_at</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Note.get_previous_by_updated_at">get_previous_by_updated_at</a>
                         </li>
                         <li>
                                 <a class="function" href="#Note.id">id</a>
@@ -168,18 +177,19 @@ Tag = label dat je kan koppelen aan meerdere Notes (ManyToMany).</p>
 </span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>        <span class="s2">&quot;inhoud&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Vrije tekst (Markdown toegestaan)&quot;</span>
 </span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="p">)</span>
 </span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="n">created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s2">&quot;aangemaakt op&quot;</span><span class="p">,</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="c1"># &lt;&lt;&lt; Dit veld MOET er zijn voor de ManyToMany-relatie &gt;&gt;&gt;</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="n">tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="n">Tag</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;tags&quot;</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="p">)</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-created_at&quot;</span><span class="p">]</span>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stringrepresentatie, getoond in admin/shell.&quot;&quot;&quot;</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s2">&quot;laatst bijgewerkt op&quot;</span><span class="p">,</span> <span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="c1"># &lt;&lt;&lt; Dit veld MOET er zijn voor de ManyToMany-relatie &gt;&gt;&gt;</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="n">tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>        <span class="s2">&quot;Tag&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;tags&quot;</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="p">)</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-created_at&quot;</span><span class="p">]</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stringrepresentatie, getoond in admin/shell.&quot;&quot;&quot;</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
 </span></pre></div>
 
 
@@ -333,18 +343,19 @@ class built by <code>create_forward_many_to_many_manager()</code> defined below.
 </span><span id="Note-32"><a href="#Note-32"><span class="linenos">32</span></a>        <span class="s2">&quot;inhoud&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Vrije tekst (Markdown toegestaan)&quot;</span>
 </span><span id="Note-33"><a href="#Note-33"><span class="linenos">33</span></a>    <span class="p">)</span>
 </span><span id="Note-34"><a href="#Note-34"><span class="linenos">34</span></a>    <span class="n">created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s2">&quot;aangemaakt op&quot;</span><span class="p">,</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="Note-35"><a href="#Note-35"><span class="linenos">35</span></a>
-</span><span id="Note-36"><a href="#Note-36"><span class="linenos">36</span></a>    <span class="c1"># &lt;&lt;&lt; Dit veld MOET er zijn voor de ManyToMany-relatie &gt;&gt;&gt;</span>
-</span><span id="Note-37"><a href="#Note-37"><span class="linenos">37</span></a>    <span class="n">tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
-</span><span id="Note-38"><a href="#Note-38"><span class="linenos">38</span></a>        <span class="n">Tag</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;tags&quot;</span>
-</span><span id="Note-39"><a href="#Note-39"><span class="linenos">39</span></a>    <span class="p">)</span>
-</span><span id="Note-40"><a href="#Note-40"><span class="linenos">40</span></a>
-</span><span id="Note-41"><a href="#Note-41"><span class="linenos">41</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
-</span><span id="Note-42"><a href="#Note-42"><span class="linenos">42</span></a>        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-created_at&quot;</span><span class="p">]</span>
-</span><span id="Note-43"><a href="#Note-43"><span class="linenos">43</span></a>
-</span><span id="Note-44"><a href="#Note-44"><span class="linenos">44</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-</span><span id="Note-45"><a href="#Note-45"><span class="linenos">45</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stringrepresentatie, getoond in admin/shell.&quot;&quot;&quot;</span>
-</span><span id="Note-46"><a href="#Note-46"><span class="linenos">46</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+</span><span id="Note-35"><a href="#Note-35"><span class="linenos">35</span></a>    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s2">&quot;laatst bijgewerkt op&quot;</span><span class="p">,</span> <span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="Note-36"><a href="#Note-36"><span class="linenos">36</span></a>
+</span><span id="Note-37"><a href="#Note-37"><span class="linenos">37</span></a>    <span class="c1"># &lt;&lt;&lt; Dit veld MOET er zijn voor de ManyToMany-relatie &gt;&gt;&gt;</span>
+</span><span id="Note-38"><a href="#Note-38"><span class="linenos">38</span></a>    <span class="n">tags</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+</span><span id="Note-39"><a href="#Note-39"><span class="linenos">39</span></a>        <span class="s2">&quot;Tag&quot;</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;tags&quot;</span>
+</span><span id="Note-40"><a href="#Note-40"><span class="linenos">40</span></a>    <span class="p">)</span>
+</span><span id="Note-41"><a href="#Note-41"><span class="linenos">41</span></a>
+</span><span id="Note-42"><a href="#Note-42"><span class="linenos">42</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+</span><span id="Note-43"><a href="#Note-43"><span class="linenos">43</span></a>        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-created_at&quot;</span><span class="p">]</span>
+</span><span id="Note-44"><a href="#Note-44"><span class="linenos">44</span></a>
+</span><span id="Note-45"><a href="#Note-45"><span class="linenos">45</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span id="Note-46"><a href="#Note-46"><span class="linenos">46</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stringrepresentatie, getoond in admin/shell.&quot;&quot;&quot;</span>
+</span><span id="Note-47"><a href="#Note-47"><span class="linenos">47</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
 </span></pre></div>
 
 
@@ -393,6 +404,22 @@ object the first time, the query is executed.</p>
         
     </div>
     <a class="headerlink" href="#Note.created_at"></a>
+    
+            <div class="docstring"><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</div>
+
+
+                            </div>
+                            <div id="Note.updated_at" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">updated_at</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Note.updated_at"></a>
     
             <div class="docstring"><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
@@ -454,6 +481,44 @@ callables as instance methods.</p>
         
     </div>
     <a class="headerlink" href="#Note.get_previous_by_created_at"></a>
+    
+            <div class="docstring"><p>Method descriptor with partial application of the given arguments
+and keywords.</p>
+
+<p>Supports wrapping existing descriptors and handles non-descriptor
+callables as instance methods.</p>
+</div>
+
+
+                            </div>
+                            <div id="Note.get_next_by_updated_at" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_next_by_updated_at</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Note.get_next_by_updated_at"></a>
+    
+            <div class="docstring"><p>Method descriptor with partial application of the given arguments
+and keywords.</p>
+
+<p>Supports wrapping existing descriptors and handles non-descriptor
+callables as instance methods.</p>
+</div>
+
+
+                            </div>
+                            <div id="Note.get_previous_by_updated_at" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_previous_by_updated_at</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Note.get_previous_by_updated_at"></a>
     
             <div class="docstring"><p>Method descriptor with partial application of the given arguments
 and keywords.</p>

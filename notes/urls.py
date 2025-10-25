@@ -6,6 +6,8 @@ from .views import (
     edit_note,
     delete_note,
     duplicate_note,
+    public_list_notes,
+    public_detail_note,
     api_list_notes,
     api_new_note,
 )
@@ -18,6 +20,9 @@ urlpatterns = [
     path("<int:pk>/edit/", edit_note, name="edit"),
     path("<int:pk>/delete/", delete_note, name="delete"),
     path("<int:pk>/duplicate/", duplicate_note, name="duplicate"),
+    # publieke read-only routes
+    path("pub/", public_list_notes, name="public_list"),
+    path("pub/<int:pk>/", public_detail_note, name="public_detail"),
     # API endpoints
     path("api/new/", api_new_note, name="api_new"),
     path("api/list/", api_list_notes, name="api_list"),

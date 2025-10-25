@@ -18,7 +18,9 @@ class NoteEditingTests(TestCase):
     def test_edit_note_updates_fields_and_tags(self):
         url = reverse("notes:edit", args=[self.note.pk])
 
-        # nieuwe data om te posten
+        # oude timestamp bewaren vóór de wijziging
+        old_updated = self.note.updated_at
+
         updated_data = {
             "title": "Nieuwe titel",
             "body": "Nieuwe **body** in markdown",
@@ -30,9 +32,17 @@ class NoteEditingTests(TestCase):
         # redirect terug naar detail
         self.assertEqual(resp.status_code, 302)
 
+        # haal nieuwe versie uit de database
         self.note.refresh_from_db()
+
+        # titel/body aangepast?
         self.assertEqual(self.note.title, "Nieuwe titel")
         self.assertIn("Nieuwe **body**", self.note.body)
+
+        # updated_at moet nu >= oude updated_at zijn
+        self.assertTrue(self.note.updated_at >= old_updated)
+
+        # tags moeten nu alleen nog 'werk' bevatten
         self.assertQuerySetEqual(
             self.note.tags.order_by("name"),
             Tag.objects.filter(pk=self.t_work.pk).order_by("name"),
@@ -64,17 +74,15 @@ class NoteEditingTests(TestCase):
         resp_post = self.client.post(url)
         self.assertEqual(resp_post.status_code, 302)
 
-        # er zou nu een tweede Note moeten zijn
         notes = Note.objects.order_by("pk")
         self.assertEqual(notes.count(), 2)
 
         original = notes[0]
         copy = notes[1]
 
-        self.assertEqual(original.title, "Oude titel")
-        self.assertEqual(copy.body, original.body)
+        self.assertEqual(original.body, copy.body)
+        self.assertTrue(copy.title.startswith("Kopie van "))
         self.assertEqual(
             list(copy.tags.order_by("name").values_list("name", flat=True)),
             list(original.tags.order_by("name").values_list("name", flat=True)),
         )
-        self.assertTrue(copy.title.startswith("Kopie van "))

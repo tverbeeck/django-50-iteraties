@@ -31,10 +31,11 @@ class Note(models.Model):
         "inhoud", blank=True, help_text="Vrije tekst (Markdown toegestaan)"
     )
     created_at = models.DateTimeField("aangemaakt op", auto_now_add=True)
+    updated_at = models.DateTimeField("laatst bijgewerkt op", auto_now=True)
 
     # <<< Dit veld MOET er zijn voor de ManyToMany-relatie >>>
     tags = models.ManyToManyField(
-        Tag, related_name="notes", blank=True, verbose_name="tags"
+        "Tag", related_name="notes", blank=True, verbose_name="tags"
     )
 
     class Meta:

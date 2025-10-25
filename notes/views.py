@@ -250,3 +250,42 @@ def api_new_note(request: HttpRequest) -> JsonResponse:
         "tags": [t.name for t in note.tags.all()],
     }
     return JsonResponse(data, status=201)
+
+
+def public_list_notes(request: HttpRequest) -> HttpResponse:
+    """
+    Publieke read-only lijst.
+    Geen zoekveld, geen edit-acties.
+    Toont alle notes gesorteerd op -updated_at (laatst bijgewerkt eerst).
+    """
+    notes_qs = (
+        Note.objects.all()
+        .prefetch_related("tags")
+        .order_by("-updated_at", "-created_at", "title")
+    )
+
+    return render(
+        request,
+        "notes/public_list.html",
+        {
+            "notes": notes_qs,
+        },
+    )
+
+
+def public_detail_note(request: HttpRequest, pk: int) -> HttpResponse:
+    """
+    Publieke read-only detail.
+    Zelfde Markdown rendering, maar zonder beheer-links.
+    """
+    note = get_object_or_404(
+        Note.objects.prefetch_related("tags"),
+        pk=pk,
+    )
+    return render(
+        request,
+        "notes/public_detail.html",
+        {
+            "note": note,
+        },
+    )

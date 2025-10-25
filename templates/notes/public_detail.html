@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% load markdown_extras %}
+
+{% block title %}{{ note.title }} — publiek — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+  <h1>{{ note.title }}</h1>
+
+  <link rel="stylesheet" href="{% static 'css/markdown.css' %}">
+
+  {% if note.body %}
+    <div class="note-body">
+      {{ note.body|markdownify }}
+    </div>
+  {% else %}
+    <p><em>Geen inhoud</em></p>
+  {% endif %}
+
+  {% if note.tags.all %}
+    <p>
+      Tags:
+      {% for t in note.tags.all %}
+        <span style="
+            display:inline-block;
+            padding:.1rem .4rem;
+            border:1px solid #ddd;
+            border-radius:.4rem;
+            font-size:.8rem;
+            margin-right:.4rem;
+            background-color:#f8f8f8;
+          ">
+          {{ t.name }}
+        </span>
+      {% endfor %}
+    </p>
+  {% endif %}
+
+  {% if note.created_at or note.updated_at %}
+    <p style="font-size:.8rem; color:#666; margin-top:1rem;">
+      {% if note.created_at %}
+        Aangemaakt op: {{ note.created_at|date:"Y-m-d H:i" }}.
+      {% endif %}
+      {% if note.updated_at %}
+        Laatst gewijzigd op: {{ note.updated_at|date:"Y-m-d H:i" }}.
+      {% endif %}
+    </p>
+  {% endif %}
+
+  <p style="margin-top:2rem;font-size:.9rem;">
+    <a href="{% url 'notes:public_list' %}">← Terug naar publieke lijst</a>
+  </p>
+{% endblock %}

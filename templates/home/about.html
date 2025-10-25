@@ -1,6 +1,9 @@
 {% extends "base.html" %}
-{% block title %}About — {{ SITE_NAME }}{% endblock %}
+
 {% block content %}
   <h1>Over dit project</h1>
-  <p>We bouwen in ~50 iteraties een Django-site met tests, documentatie en GitHub-pushes.</p>
+  <p>Dit is een interne wiki / notitie-app met tags, markdown, publieke leesweergave en API.</p>
+  <p>Versie: Iteratie 16.</p>
+
+  <p><a href="{% url 'home' %}">← Terug naar dashboard</a></p>
 {% endblock %}

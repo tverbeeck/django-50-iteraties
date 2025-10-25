@@ -59,6 +59,12 @@
             <li>
                     <a class="function" href="#api_new_note">api_new_note</a>
             </li>
+            <li>
+                    <a class="function" href="#public_list_notes">public_list_notes</a>
+            </li>
+            <li>
+                    <a class="function" href="#public_detail_note">public_detail_note</a>
+            </li>
     </ul>
 
 
@@ -337,6 +343,45 @@ Bevat ook tag-weergave.</p>
 </span><span id="L-250"><a href="#L-250"><span class="linenos">250</span></a>        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">note</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">all</span><span class="p">()],</span>
 </span><span id="L-251"><a href="#L-251"><span class="linenos">251</span></a>    <span class="p">}</span>
 </span><span id="L-252"><a href="#L-252"><span class="linenos">252</span></a>    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+</span><span id="L-253"><a href="#L-253"><span class="linenos">253</span></a>
+</span><span id="L-254"><a href="#L-254"><span class="linenos">254</span></a>
+</span><span id="L-255"><a href="#L-255"><span class="linenos">255</span></a><span class="k">def</span><span class="w"> </span><span class="nf">public_list_notes</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HttpResponse</span><span class="p">:</span>
+</span><span id="L-256"><a href="#L-256"><span class="linenos">256</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-257"><a href="#L-257"><span class="linenos">257</span></a><span class="sd">    Publieke read-only lijst.</span>
+</span><span id="L-258"><a href="#L-258"><span class="linenos">258</span></a><span class="sd">    Geen zoekveld, geen edit-acties.</span>
+</span><span id="L-259"><a href="#L-259"><span class="linenos">259</span></a><span class="sd">    Toont alle notes gesorteerd op -updated_at (laatst bijgewerkt eerst).</span>
+</span><span id="L-260"><a href="#L-260"><span class="linenos">260</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-261"><a href="#L-261"><span class="linenos">261</span></a>    <span class="n">notes_qs</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="L-262"><a href="#L-262"><span class="linenos">262</span></a>        <span class="n">Note</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>        <span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span>
+</span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-updated_at&quot;</span><span class="p">,</span> <span class="s2">&quot;-created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">)</span>
+</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a>    <span class="p">)</span>
+</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a>
+</span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+</span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a>        <span class="n">request</span><span class="p">,</span>
+</span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a>        <span class="s2">&quot;notes/public_list.html&quot;</span><span class="p">,</span>
+</span><span id="L-270"><a href="#L-270"><span class="linenos">270</span></a>        <span class="p">{</span>
+</span><span id="L-271"><a href="#L-271"><span class="linenos">271</span></a>            <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">notes_qs</span><span class="p">,</span>
+</span><span id="L-272"><a href="#L-272"><span class="linenos">272</span></a>        <span class="p">},</span>
+</span><span id="L-273"><a href="#L-273"><span class="linenos">273</span></a>    <span class="p">)</span>
+</span><span id="L-274"><a href="#L-274"><span class="linenos">274</span></a>
+</span><span id="L-275"><a href="#L-275"><span class="linenos">275</span></a>
+</span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a><span class="k">def</span><span class="w"> </span><span class="nf">public_detail_note</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HttpResponse</span><span class="p">:</span>
+</span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-278"><a href="#L-278"><span class="linenos">278</span></a><span class="sd">    Publieke read-only detail.</span>
+</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a><span class="sd">    Zelfde Markdown rendering, maar zonder beheer-links.</span>
+</span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a>    <span class="n">note</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span>
+</span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a>        <span class="n">Note</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">),</span>
+</span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a>        <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">,</span>
+</span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a>    <span class="p">)</span>
+</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+</span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a>        <span class="n">request</span><span class="p">,</span>
+</span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a>        <span class="s2">&quot;notes/public_detail.html&quot;</span><span class="p">,</span>
+</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a>        <span class="p">{</span>
+</span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a>            <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a>        <span class="p">},</span>
+</span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a>    <span class="p">)</span>
 </span></pre></div>
 
 
@@ -732,6 +777,82 @@ Body (JSON):
   400 bij invalid input
   403 bij ontbrekende/verkeerde key</p>
 </blockquote>
+</div>
+
+
+                </section>
+                <section id="public_list_notes">
+                            <input id="public_list_notes-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">public_list_notes</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">request</span><span class="p">:</span> <span class="n">django</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HttpRequest</span></span><span class="return-annotation">) -> <span class="n">django</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">HttpResponse</span>:</span></span>
+
+                <label class="view-source-button" for="public_list_notes-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#public_list_notes"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="public_list_notes-256"><a href="#public_list_notes-256"><span class="linenos">256</span></a><span class="k">def</span><span class="w"> </span><span class="nf">public_list_notes</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HttpResponse</span><span class="p">:</span>
+</span><span id="public_list_notes-257"><a href="#public_list_notes-257"><span class="linenos">257</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="public_list_notes-258"><a href="#public_list_notes-258"><span class="linenos">258</span></a><span class="sd">    Publieke read-only lijst.</span>
+</span><span id="public_list_notes-259"><a href="#public_list_notes-259"><span class="linenos">259</span></a><span class="sd">    Geen zoekveld, geen edit-acties.</span>
+</span><span id="public_list_notes-260"><a href="#public_list_notes-260"><span class="linenos">260</span></a><span class="sd">    Toont alle notes gesorteerd op -updated_at (laatst bijgewerkt eerst).</span>
+</span><span id="public_list_notes-261"><a href="#public_list_notes-261"><span class="linenos">261</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="public_list_notes-262"><a href="#public_list_notes-262"><span class="linenos">262</span></a>    <span class="n">notes_qs</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="public_list_notes-263"><a href="#public_list_notes-263"><span class="linenos">263</span></a>        <span class="n">Note</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</span><span id="public_list_notes-264"><a href="#public_list_notes-264"><span class="linenos">264</span></a>        <span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">)</span>
+</span><span id="public_list_notes-265"><a href="#public_list_notes-265"><span class="linenos">265</span></a>        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-updated_at&quot;</span><span class="p">,</span> <span class="s2">&quot;-created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">)</span>
+</span><span id="public_list_notes-266"><a href="#public_list_notes-266"><span class="linenos">266</span></a>    <span class="p">)</span>
+</span><span id="public_list_notes-267"><a href="#public_list_notes-267"><span class="linenos">267</span></a>
+</span><span id="public_list_notes-268"><a href="#public_list_notes-268"><span class="linenos">268</span></a>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+</span><span id="public_list_notes-269"><a href="#public_list_notes-269"><span class="linenos">269</span></a>        <span class="n">request</span><span class="p">,</span>
+</span><span id="public_list_notes-270"><a href="#public_list_notes-270"><span class="linenos">270</span></a>        <span class="s2">&quot;notes/public_list.html&quot;</span><span class="p">,</span>
+</span><span id="public_list_notes-271"><a href="#public_list_notes-271"><span class="linenos">271</span></a>        <span class="p">{</span>
+</span><span id="public_list_notes-272"><a href="#public_list_notes-272"><span class="linenos">272</span></a>            <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">notes_qs</span><span class="p">,</span>
+</span><span id="public_list_notes-273"><a href="#public_list_notes-273"><span class="linenos">273</span></a>        <span class="p">},</span>
+</span><span id="public_list_notes-274"><a href="#public_list_notes-274"><span class="linenos">274</span></a>    <span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Publieke read-only lijst.
+Geen zoekveld, geen edit-acties.
+Toont alle notes gesorteerd op -updated_at (laatst bijgewerkt eerst).</p>
+</div>
+
+
+                </section>
+                <section id="public_detail_note">
+                            <input id="public_detail_note-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">public_detail_note</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">request</span><span class="p">:</span> <span class="n">django</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HttpRequest</span>,</span><span class="param">	<span class="n">pk</span><span class="p">:</span> <span class="nb">int</span></span><span class="return-annotation">) -> <span class="n">django</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">HttpResponse</span>:</span></span>
+
+                <label class="view-source-button" for="public_detail_note-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#public_detail_note"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="public_detail_note-277"><a href="#public_detail_note-277"><span class="linenos">277</span></a><span class="k">def</span><span class="w"> </span><span class="nf">public_detail_note</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">,</span> <span class="n">pk</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HttpResponse</span><span class="p">:</span>
+</span><span id="public_detail_note-278"><a href="#public_detail_note-278"><span class="linenos">278</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="public_detail_note-279"><a href="#public_detail_note-279"><span class="linenos">279</span></a><span class="sd">    Publieke read-only detail.</span>
+</span><span id="public_detail_note-280"><a href="#public_detail_note-280"><span class="linenos">280</span></a><span class="sd">    Zelfde Markdown rendering, maar zonder beheer-links.</span>
+</span><span id="public_detail_note-281"><a href="#public_detail_note-281"><span class="linenos">281</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="public_detail_note-282"><a href="#public_detail_note-282"><span class="linenos">282</span></a>    <span class="n">note</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span>
+</span><span id="public_detail_note-283"><a href="#public_detail_note-283"><span class="linenos">283</span></a>        <span class="n">Note</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">&quot;tags&quot;</span><span class="p">),</span>
+</span><span id="public_detail_note-284"><a href="#public_detail_note-284"><span class="linenos">284</span></a>        <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">,</span>
+</span><span id="public_detail_note-285"><a href="#public_detail_note-285"><span class="linenos">285</span></a>    <span class="p">)</span>
+</span><span id="public_detail_note-286"><a href="#public_detail_note-286"><span class="linenos">286</span></a>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+</span><span id="public_detail_note-287"><a href="#public_detail_note-287"><span class="linenos">287</span></a>        <span class="n">request</span><span class="p">,</span>
+</span><span id="public_detail_note-288"><a href="#public_detail_note-288"><span class="linenos">288</span></a>        <span class="s2">&quot;notes/public_detail.html&quot;</span><span class="p">,</span>
+</span><span id="public_detail_note-289"><a href="#public_detail_note-289"><span class="linenos">289</span></a>        <span class="p">{</span>
+</span><span id="public_detail_note-290"><a href="#public_detail_note-290"><span class="linenos">290</span></a>            <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">note</span><span class="p">,</span>
+</span><span id="public_detail_note-291"><a href="#public_detail_note-291"><span class="linenos">291</span></a>        <span class="p">},</span>
+</span><span id="public_detail_note-292"><a href="#public_detail_note-292"><span class="linenos">292</span></a>    <span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Publieke read-only detail.
+Zelfde Markdown rendering, maar zonder beheer-links.</p>
 </div>
 
 
