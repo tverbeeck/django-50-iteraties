@@ -2,32 +2,32 @@
 notes.views
 ===========
 
-Views voor het notitie-overzicht.
+Views voor notities (lijst, detail, aanmaken, API, ...).
+Bevat ook tag-weergave.
 """
 
+from typing import List
+
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Note
+from django.db.models import Prefetch
 from django.contrib import messages
+from django.http import HttpRequest, HttpResponse, JsonResponse
+
 from .forms import NoteForm
-from django.http import JsonResponse
+from .models import Note, Tag
 
 
-def api_list_notes(request):
+def list_notes(request: HttpRequest) -> HttpResponse:
     """
-    Eenvoudig JSON-endpoint met (id, title, created_at) voor alle notities.
+    Toon een lijst met notities met hun tags (prefetch om queries te beperken).
     """
-    data = [
-        {
-            "id": n.id,
-            "title": n.title,
-            "created_at": n.created_at.isoformat() if n.created_at else None,
-        }
-        for n in Note.objects.all()
-    ]
-    return JsonResponse(data, safe=False)
+    notes = Note.objects.all().prefetch_related(
+        Prefetch("tags", queryset=Tag.objects.order_by("name"))
+    )
+    return render(request, "notes/list.html", {"notes": notes})
 
 
-def create_note(request):
+def create_note(request: HttpRequest) -> HttpResponse:
     """
     Maak een nieuwe notitie aan via een ModelForm.
     """
@@ -42,17 +42,26 @@ def create_note(request):
     return render(request, "notes/form.html", {"form": form})
 
 
-def list_notes(request):
-    """
-    Toon een eenvoudige lijst met notities.
-    """
-    notes = Note.objects.all()
-    return render(request, "notes/list.html", {"notes": notes})
-
-
-def detail_note(request, pk: int):
+def detail_note(request: HttpRequest, pk: int) -> HttpResponse:
     """
     Detailpagina voor één notitie.
     """
-    note = get_object_or_404(Note, pk=pk)
+    note = get_object_or_404(Note.objects.prefetch_related("tags"), pk=pk)
     return render(request, "notes/detail.html", {"note": note})
+
+
+def api_list_notes(request: HttpRequest) -> JsonResponse:
+    """
+    JSON-endpoint met id, title, created_at en tags per note.
+    """
+    qs = Note.objects.all().prefetch_related("tags")
+    data: List[dict] = [
+        {
+            "id": n.id,
+            "title": n.title,
+            "created_at": n.created_at.isoformat() if n.created_at else None,
+            "tags": [t.name for t in n.tags.all()],
+        }
+        for n in qs
+    ]
+    return JsonResponse(data, safe=False)

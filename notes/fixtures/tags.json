@@ -1,0 +1,5 @@
+[
+  { "model": "notes.tag", "pk": 1, "fields": { "name": "werk" } },
+  { "model": "notes.tag", "pk": 2, "fields": { "name": "privé" } },
+  { "model": "notes.tag", "pk": 3, "fields": { "name": "ideeën" } }
+]

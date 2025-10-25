@@ -7,7 +7,7 @@ De docstrings worden later gebruikt voor wiki-achtige HTML.
 """
 
 from django import forms
-from .models import Note
+from .models import Note, Tag
 
 
 class NoteForm(forms.ModelForm):
@@ -15,7 +15,7 @@ class NoteForm(forms.ModelForm):
 
     class Meta:
         model = Note
-        fields = ["title", "body"]
+        fields = ["title", "body", "tags"]
         widgets = {
             "title": forms.TextInput(
                 attrs={"placeholder": "Titel", "autofocus": "autofocus"}
@@ -23,11 +23,17 @@ class NoteForm(forms.ModelForm):
             "body": forms.Textarea(
                 attrs={"rows": 6, "placeholder": "Inhoud (markdown mag)"}
             ),
+            "tags": forms.CheckboxSelectMultiple,
         }
         help_texts = {
             "title": "Korte titel voor de notitie.",
             "body": "Optioneel. Je kunt later markdown parsers toevoegen.",
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # queryset dynamisch (efficiënt bij latere filtering)
+        self.fields["tags"].queryset = Tag.objects.all()
 
     def clean_title(self):
         """
