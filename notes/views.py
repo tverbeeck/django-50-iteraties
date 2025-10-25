@@ -19,12 +19,31 @@ from .models import Note, Tag
 
 def list_notes(request: HttpRequest) -> HttpResponse:
     """
-    Toon een lijst met notities met hun tags (prefetch om queries te beperken).
+    Toon een lijst met notities.
+    Optionele filter:
+    - ?tag=werk  -> alleen notities met tag 'werk'
     """
-    notes = Note.objects.all().prefetch_related(
+    tag_filter = request.GET.get("tag")
+
+    base_qs = Note.objects.all().prefetch_related(
         Prefetch("tags", queryset=Tag.objects.order_by("name"))
     )
-    return render(request, "notes/list.html", {"notes": notes})
+
+    if tag_filter:
+        # filter op tag-naam (case-insensitive)
+        notes = base_qs.filter(tags__name__iexact=tag_filter).distinct()
+    else:
+        notes = base_qs
+
+    # alle tags voor de filter-UI
+    all_tags = Tag.objects.order_by("name")
+
+    context = {
+        "notes": notes,
+        "active_tag": tag_filter,
+        "all_tags": all_tags,
+    }
+    return render(request, "notes/list.html", context)
 
 
 def create_note(request: HttpRequest) -> HttpResponse:
