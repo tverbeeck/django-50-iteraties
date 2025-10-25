@@ -12,6 +12,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]  # .../Django
 load_dotenv(BASE_DIR / ".env")
 
 # Kern
+API_KEY = os.getenv("API_KEY", "dev-secret-key-change-me")  # eenvoudige shared secret
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-key-change-me")
 DEBUG = False  # override in dev.py
 

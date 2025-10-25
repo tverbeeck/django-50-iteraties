@@ -67,3 +67,39 @@ class NotesFilterTests(TestCase):
         self.assertNotContains(resp, self.note1.title)
         self.assertNotContains(resp, self.note2.title)
         self.assertNotContains(resp, self.note3.title)
+
+    def test_search_q_filters_by_title_or_body(self):
+        """
+        ?q=body2 moet note2 laten zien (want body2 zit daarin),
+        maar niet noodzakelijk note1/note3.
+        """
+        url = reverse("notes:list") + "?q=body2"
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertContains(resp, self.note2.title)
+        self.assertNotContains(resp, self.note1.title)
+        self.assertNotContains(resp, self.note3.title)
+
+        self.assertContains(resp, "Zoekterm:")
+        self.assertContains(resp, "body2")
+
+    def test_search_q_combined_with_tag(self):
+        """
+        ?tag=werk&q=body1:
+        - note1 heeft tag 'werk' en body1 -> zichtbaar
+        - note2 heeft 'privé' dus niet
+        - note3 heeft geen tag
+        """
+        url = reverse("notes:list") + "?tag=werk&q=body1"
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertContains(resp, self.note1.title)
+        self.assertNotContains(resp, self.note2.title)
+        self.assertNotContains(resp, self.note3.title)
+
+        self.assertContains(resp, "Gefilterd op tag:")
+        self.assertContains(resp, "werk")
+        self.assertContains(resp, "Zoekterm:")
+        self.assertContains(resp, "body1")

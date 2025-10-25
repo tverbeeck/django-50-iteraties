@@ -5,34 +5,55 @@
 
   <p><a href="{% url 'notes:new' %}">Nieuwe notitie</a></p>
 
-  {# Filter UI #}
-  <section style="margin: 1rem 0; padding: .75rem; border: 1px solid #ccc; border-radius: .5rem; background: #fafafa;">
-    <strong>Filter op tag:</strong>
-
-    {# link "Alle" #}
-    <a
-      href="{% url 'notes:list' %}"
-      style="margin-left:.5rem;{% if not active_tag %} font-weight:bold; text-decoration:underline; {% endif %}"
-    >
-      alles
-    </a>
-
-    {# individuele tags #}
-    {% for t in all_tags %}
+  <section style="margin: 1rem 0; padding: .75rem; border: 1px solid #ccc; border-radius: .5rem; background: #fafafa; display:flex; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <strong>Filter op tag:</strong>
       <a
-        href="{% url 'notes:list' %}?tag={{ t.name|urlencode }}"
-        style="margin-left:.5rem;{% if active_tag and active_tag|lower == t.name|lower %} font-weight:bold; text-decoration:underline; {% endif %}"
+        href="{% url 'notes:list' %}{% if q %}?q={{ q|urlencode }}{% endif %}"
+        style="margin-left:.5rem;{% if not active_tag %} font-weight:bold; text-decoration:underline; {% endif %}"
       >
-        {{ t.name }}
+        alles
       </a>
-    {% empty %}
-      <em style="margin-left:.5rem;">(nog geen tags)</em>
-    {% endfor %}
+
+      {% for t in all_tags %}
+        {# combineer tag + q in de link #}
+        <a
+          href="{% url 'notes:list' %}?tag={{ t.name|urlencode }}{% if q %}&q={{ q|urlencode }}{% endif %}"
+          style="margin-left:.5rem;{% if active_tag and active_tag|lower == t.name|lower %} font-weight:bold; text-decoration:underline; {% endif %}"
+        >
+          {{ t.name }}
+        </a>
+      {% empty %}
+        <em style="margin-left:.5rem;">(nog geen tags)</em>
+      {% endfor %}
+    </div>
+
+    <form method="get" action="{% url 'notes:list' %}" style="margin-left:auto;">
+      {# als er al een tag actief is, hou die vast als hidden input #}
+      {% if active_tag %}
+        <input type="hidden" name="tag" value="{{ active_tag }}">
+      {% endif %}
+
+      <input
+        type="text"
+        name="q"
+        value="{{ q }}"
+        placeholder="Zoek in titel / inhoud"
+        style="padding:.3rem .5rem;"
+      />
+      <button type="submit" style="padding:.3rem .6rem;">Zoek</button>
+    </form>
   </section>
 
-  {# titel van de huidige filter #}
-  {% if active_tag %}
-    <p>Gefilterd op tag: <strong>{{ active_tag }}</strong></p>
+  {% if active_tag or q %}
+    <p>
+      {% if active_tag %}
+        Gefilterd op tag: <strong>{{ active_tag }}</strong>.
+      {% endif %}
+      {% if q %}
+        Zoekterm: <strong>{{ q }}</strong>.
+      {% endif %}
+    </p>
   {% endif %}
 
   <ul>
@@ -57,7 +78,7 @@
         {% endif %}
       </li>
     {% empty %}
-      <li>Geen notities{% if active_tag %} met tag "{{ active_tag }}"{% endif %}</li>
+      <li>Geen notities{% if active_tag %} met tag "{{ active_tag }}"{% endif %}{% if q %} die "{{ q }}" bevatten{% endif %}</li>
     {% endfor %}
   </ul>
 {% endblock %}
