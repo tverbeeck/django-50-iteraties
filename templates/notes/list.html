@@ -3,9 +3,29 @@
 {% block content %}
   <h1>Notities</h1>
   <p><a href="{% url 'notes:new' %}">Nieuwe notitie</a></p>
+
   <ul>
     {% for n in notes %}
-      <li><a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a></li>
+      <li style="margin-bottom: .5rem;">
+        <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
+
+        {# badgejes met tags #}
+        {% if n.tags.all %}
+          {% for t in n.tags.all %}
+            <span style="
+                display:inline-block;
+                padding:.1rem .4rem;
+                border:1px solid #ddd;
+                border-radius:.4rem;
+                font-size:.8rem;
+                margin-left:.4rem;
+                background-color:#f8f8f8;
+              ">
+              {{ t.name }}
+            </span>
+          {% endfor %}
+        {% endif %}
+      </li>
     {% empty %}
       <li>Geen notities</li>
     {% endfor %}

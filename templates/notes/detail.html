@@ -2,6 +2,32 @@
 {% block title %}{{ note.title }} — {{ SITE_NAME }}{% endblock %}
 {% block content %}
   <h1>{{ note.title }}</h1>
-  {% if note.body %}<p>{{ note.body }}</p>{% else %}<p><em>Geen inhoud</em></p>{% endif %}
+
+  {% if note.body %}
+    <p>{{ note.body }}</p>
+  {% else %}
+    <p><em>Geen inhoud</em></p>
+  {% endif %}
+
+  {# toon tags #}
+  {% if note.tags.all %}
+    <p>
+      Tags:
+      {% for t in note.tags.all %}
+        <span style="
+            display:inline-block;
+            padding:.1rem .4rem;
+            border:1px solid #ddd;
+            border-radius:.4rem;
+            font-size:.8rem;
+            margin-right:.4rem;
+            background-color:#f8f8f8;
+          ">
+          {{ t.name }}
+        </span>
+      {% endfor %}
+    </p>
+  {% endif %}
+
   <p><a href="{% url 'notes:list' %}">← Terug naar overzicht</a></p>
 {% endblock %}
