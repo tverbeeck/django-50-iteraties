@@ -30,6 +30,90 @@ from .models import Note, Tag
 # let op: voeg Q toe bij je imports bovenin het bestand als dat er nog niet stond
 
 
+def edit_note(request: HttpRequest, pk: int) -> HttpResponse:
+    """
+    Bewerk een bestaande Note.
+    - GET: toon formulier vooraf ingevuld
+    - POST: valideer en sla op
+    """
+    note = get_object_or_404(Note, pk=pk)
+
+    if request.method == "POST":
+        form = NoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Notitie is bijgewerkt.")
+            return redirect("notes:detail", pk=note.pk)
+    else:
+        form = NoteForm(instance=note)
+
+    return render(
+        request,
+        "notes/edit.html",
+        {
+            "form": form,
+            "note": note,
+        },
+    )
+
+
+def delete_note(request: HttpRequest, pk: int) -> HttpResponse:
+    """
+    Verwijder een bestaande Note.
+    - GET: toon confirm-schermpje
+    - POST: voer de delete uit en redirect naar lijst
+    """
+    note = get_object_or_404(Note, pk=pk)
+
+    if request.method == "POST":
+        title = note.title
+        note.delete()
+        messages.success(request, f'Notitie "{title}" is verwijderd.')
+        return redirect("notes:list")
+
+    # GET -> confirmpagina tonen
+    return render(
+        request,
+        "notes/confirm_delete.html",
+        {
+            "note": note,
+        },
+    )
+
+
+def duplicate_note(request: HttpRequest, pk: int) -> HttpResponse:
+    """
+    Maak een kopie van een bestaande Note (incl. tags).
+    - GET: toon confirm-scherm
+    - POST: maak duplicaat en redirect naar detail van de nieuwe
+    """
+    original = get_object_or_404(Note, pk=pk)
+
+    if request.method == "POST":
+        # Maak nieuwe note met prefix "Kopie van ..."
+        new_note = Note.objects.create(
+            title=f"Kopie van {original.title}",
+            body=original.body,
+        )
+        # Kopieer tags mee
+        new_note.tags.set(original.tags.all())
+
+        messages.success(
+            request,
+            f'Notitie "{original.title}" is gedupliceerd als "{new_note.title}".',
+        )
+        return redirect("notes:detail", pk=new_note.pk)
+
+    # GET -> confirmpagina tonen
+    return render(
+        request,
+        "notes/confirm_duplicate.html",
+        {
+            "note": original,
+        },
+    )
+
+
 def list_notes(request: HttpRequest) -> HttpResponse:
     """
     Toon een lijst met notities, met optionele filters:

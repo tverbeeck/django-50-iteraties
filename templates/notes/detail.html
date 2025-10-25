@@ -37,5 +37,11 @@
     </p>
   {% endif %}
 
+  <p style="margin-top:2rem; font-size:.9rem;">
+    <a href="{% url 'notes:edit' note.pk %}">Bewerken</a> ·
+    <a href="{% url 'notes:duplicate' note.pk %}">Dupliceren</a> ·
+    <a href="{% url 'notes:delete' note.pk %}" style="color:#c00;">Verwijderen</a>
+  </p>
+
   <p><a href="{% url 'notes:list' %}">← Terug naar overzicht</a></p>
 {% endblock %}

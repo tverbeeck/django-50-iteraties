@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Notitie bewerken — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+  <h1>Notitie bewerken</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <div style="margin-bottom:1rem;">
+      <label for="{{ form.title.id_for_label }}">Titel</label><br />
+      {{ form.title }}
+      {% if form.title.help_text %}
+        <div style="font-size:.8rem;color:#666;">{{ form.title.help_text }}</div>
+      {% endif %}
+      {% if form.title.errors %}
+        <div style="color:#c00;">{{ form.title.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <label for="{{ form.body.id_for_label }}">Inhoud (Markdown)</label><br />
+      {{ form.body }}
+      {% if form.body.help_text %}
+        <div style="font-size:.8rem;color:#666;">{{ form.body.help_text }}</div>
+      {% endif %}
+      {% if form.body.errors %}
+        <div style="color:#c00;">{{ form.body.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <label>Tags</label><br />
+      {{ form.tags }}
+      {% if form.tags.errors %}
+        <div style="color:#c00;">{{ form.tags.errors }}</div>
+      {% endif %}
+    </div>
+
+    <button type="submit">Opslaan</button>
+    <a href="{% url 'notes:detail' note.pk %}" style="margin-left:1rem;">Annuleren</a>
+  </form>
+{% endblock %}

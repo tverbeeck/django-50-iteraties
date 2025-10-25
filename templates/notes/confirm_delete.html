@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Notitie verwijderen — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+  <h1>Notitie verwijderen</h1>
+
+  <p>Weet je zeker dat je deze notitie wil verwijderen?</p>
+
+  <p><strong>{{ note.title }}</strong></p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" style="background:#c00;color:#fff;padding:.5rem .75rem;border:0;border-radius:.4rem;">
+      Verwijder definitief
+    </button>
+    <a href="{% url 'notes:detail' note.pk %}" style="margin-left:1rem;">Annuleren</a>
+  </form>
+{% endblock %}
