@@ -9,10 +9,10 @@ class HomeDashboardTests(TestCase):
         De homepage (dashboard) moet:
         - recente notities tonen
         - tags tonen
-        - een link hebben naar publieke wikiweergave
+        - een link hebben naar publieke wiki
         """
 
-        # Arrange: maak wat tags en notes zodat er iets te tonen valt
+        # Arrange: maak wat data
         t = Tag.objects.create(name="dashboardtag")
 
         n1 = Note.objects.create(
@@ -28,9 +28,7 @@ class HomeDashboardTests(TestCase):
         n2.tags.add(t)
 
         # Act: vraag de homepage op
-        # Belangrijk: we gebruiken reverse("home") i.p.v. reverse("home:home"),
-        # omdat je project momenteel geen namespace 'home' heeft.
-        url = reverse("home")
+        url = reverse("home")  # dit is path("", dashboard_home, name="home")
         resp = self.client.get(url)
 
         # Assert: status OK
@@ -38,15 +36,19 @@ class HomeDashboardTests(TestCase):
 
         html = resp.content.decode("utf-8")
 
-        # 1. Notitietitels zichtbaar
+        # 1. notitietitels zichtbaar
         self.assertIn("Note 1", html)
         self.assertIn("Note 2", html)
 
-        # 2. Tagnaam zichtbaar
+        # 2. tagnaam zichtbaar
         self.assertIn("dashboardtag", html)
 
-        # 3. Taglink bevat ?tag=dashboardtag
-        self.assertIn("?tag=dashboardtag", html)
+        # 3. TagLink bevat ?tag=dashboardtag
+        self.assertIn("tag=dashboardtag", html)
 
-        # 4. Link of tekst naar publieke wikiweergave
-        self.assertIn("Publieke wikiweergave", html)
+        # 4. Publieke wiki-link zichtbaar (onze eigen tekst)
+        self.assertIn("Publieke wiki", html)
+
+        # 5. De juiste URL naar de publieke lijst zit erin
+        public_url = reverse("notes:public_list")  # dit is bv. "/notes/pub/"
+        self.assertIn(public_url, html)

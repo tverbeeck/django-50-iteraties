@@ -4,7 +4,10 @@ Tests voor de detailpagina en het JSON-list endpoint.
 
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 from notes.models import Note
+
+User = get_user_model()
 
 
 class NotesDetailAndApiTests(TestCase):
@@ -28,16 +31,25 @@ class NotesDetailAndApiTests(TestCase):
 
 
 class NotesFormNormalizationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="normuser", password="pw12345")
+        self.client.force_login(self.user)
+
     def test_title_is_normalized_and_validated(self):
         # Post met extra spaties en korte titel checken
         url = reverse("notes:new")
-        resp = self.client.post(url, {"title": "  A ", "body": "x"})
-        # Titel te kort -> fout
-        self.assertContains(resp, "minstens 3 tekens", status_code=200)
-
-        # Nu een geldige titel met veel spaties:
-        resp = self.client.post(
-            url, {"title": "  Hello   World  ", "body": ""}, follow=True
-        )
+        resp = self.client.post(path=url, data={"title": "  A ", "body": "x"})
+        # Titel te kort -> fout, dus geen redirect (status_code=200) en foutmelding aanwezig
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(Note.objects.filter(title="Hello World").exists())
+        self.assertContains(resp, "minstens 3 tekens")
+
+        # nu met geldige titel met spaties errond
+        resp2 = self.client.post(
+            path=url, data={"title": "  Geldige titel  ", "body": "ok"}
+        )
+        # nu verwachten we redirect (302) en dat de note bestaat met opgeschoonde titel
+        self.assertEqual(resp2.status_code, 302)
+
+        n = Note.objects.latest("pk")
+        self.assertEqual(n.title, "Geldige titel")  # gestript
+        self.assertTrue(n.slug)

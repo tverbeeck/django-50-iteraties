@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Profiel</h1>
+  <p>Je bent ingelogd als <strong>{{ user.username }}</strong>.</p>
+  <p>Email: {{ user.email|default:"(geen e-mail ingesteld)" }}</p>
+{% endblock %}

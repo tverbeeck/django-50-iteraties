@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Dashboard</h1>
+
+  <p><a href="{% url 'notes:public_list' %}">Publieke wiki</a></p>
+
+  <section>
+    <h2>Recente notities</h2>
+    <ul>
+      {% for note in recent_notes %}
+        <li>
+          <a href="{% url 'notes:detail' note.pk %}">{{ note.title }}</a>
+          {% if note.updated_at %}
+            <small>(laatst bijgewerkt: {{ note.updated_at }})</small>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li>Geen notities gevonden.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Tags</h2>
+    <ul>
+      {% for tag in tags %}
+        <li>
+          <a href="{% url 'notes:list' %}?tag={{ tag.name }}">{{ tag.name }}</a>
+        </li>
+      {% empty %}
+        <li>Geen tags gevonden.</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}

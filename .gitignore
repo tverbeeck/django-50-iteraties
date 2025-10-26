@@ -14,3 +14,10 @@ staticfiles/
 
 # VSCode
 .vscode/
+
+.env
+.DS_Store
+.idea/
+.vscode/
+.coverage
+htmlcov

@@ -4,9 +4,10 @@
     "pk": 1,
     "fields": {
       "title": "Eerste notitie",
+      "slug": "eerste-notitie",
       "body": "Dit is een demonotitie.",
-      "created_at": "2025-01-01 12:00:00",
-      "updated_at": "2025-01-01 12:00:00"
+      "created_at": "2025-01-01T12:00:00Z",
+      "updated_at": "2025-01-01T12:00:00Z"
     }
   },
   {
@@ -14,19 +15,21 @@
     "pk": 2,
     "fields": {
       "title": "Tweede notitie",
+      "slug": "tweede-notitie",
       "body": "Nog een voorbeeld",
-      "created_at": "2025-01-02 12:00:00",
-      "updated_at": "2025-01-02 12:00:00"
+      "created_at": "2025-01-02T11:00:00Z",
+      "updated_at": "2025-01-02T11:00:00Z"
     }
   },
   {
     "model": "notes.note",
     "pk": 3,
     "fields": {
-      "title": "Titelnaam",
-      "body": "Nog een body",
-      "created_at": "2025-01-03 12:00:00",
-      "updated_at": "2025-01-03 12:00:00"
+      "title": "Derde notitie",
+      "slug": "derde-notitie",
+      "body": "Nog een derde voorbeeld",
+      "created_at": "2025-01-03T12:00:00Z",
+      "updated_at": "2025-01-03T12:00:00Z"
     }
   }
 ]

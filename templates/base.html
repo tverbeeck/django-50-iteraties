@@ -11,16 +11,31 @@
   <body>
     <header>
       <nav style="display: flex; gap: 1rem; align-items: center">
-        <strong>{{ SITE_NAME }}</strong>
+        <a href="{% url 'home' %}"><strong>Django 50 iteraties</strong></a>
+
         <a href="{% url 'home' %}">Dashboard</a> |
         <a href="{% url 'home-about' %}">About</a> |
         <a href="{% url 'home-index' %}">Index</a> |
         <a href="{% url 'notes:list' %}">Notities</a> |
         <a href="{% url 'notes:public_list' %}">Publiek</a>
+
+        {% if user.is_authenticated %}
+          |
+          <a href="{% url 'profile' %}">Profiel</a>
+          <span style="font-size:.9rem;color:#555;">
+            (ingelogd als {{ user.username }})
+          </span>
+          |
+          <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+          |
+          <a href="{% url 'login' %}">Login</a>
+        {% endif %}
       </nav>
     </header>
 
     <main>
+      {% block content %}
       {% if messages %}
       <ul style="list-style: none; padding: 0; margin: 0 0 1rem 0">
         {% for message in messages %}
@@ -39,7 +54,8 @@
         </li>
         {% endfor %}
       </ul>
-      {% endif %} {% block content %}{% endblock %}
+      {% endif %}
+      {% endblock %}
     </main>
 
     <footer>

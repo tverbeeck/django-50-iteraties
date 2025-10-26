@@ -8,39 +8,43 @@ Definitie van Note en Tag.
 Tag = label dat je kan koppelen aan meerdere Notes (ManyToMany).
 """
 
+# notes/models.py
 from django.db import models
+from django.utils.text import slugify
 
 
 class Tag(models.Model):
-    """Eenvoudig label om notities te groeperen/filtreren."""
+    name = models.CharField(max_length=50, unique=True)
 
-    name = models.CharField("naam", max_length=50, unique=True)
-
-    class Meta:
-        ordering = ["name"]
-
-    def __str__(self) -> str:  # pragma: no cover
+    def __str__(self):
         return self.name
 
 
 class Note(models.Model):
-    """Korte notitie met titel, optionele tekst en aanmaakdatum."""
-
-    title = models.CharField("titel", max_length=120, help_text="Korte titel")
-    body = models.TextField(
-        "inhoud", blank=True, help_text="Vrije tekst (Markdown toegestaan)"
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(
+        max_length=220,
+        blank=True,
+        null=False,  # <-- finale constraint
+        unique=True,  # <-- finale constraint
+        help_text="URL-vriendelijke unieke naam gebaseerd op de titel.",
     )
-    created_at = models.DateTimeField("aangemaakt op", auto_now_add=True)
-    updated_at = models.DateTimeField("laatst bijgewerkt op", auto_now=True)
+    body = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(Tag, related_name="notes", blank=True)
 
-    # <<< Dit veld MOET er zijn voor de ManyToMany-relatie >>>
-    tags = models.ManyToManyField(
-        "Tag", related_name="notes", blank=True, verbose_name="tags"
-    )
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self) -> str:  # pragma: no cover
-        """Stringrepresentatie, getoond in admin/shell."""
+    def __str__(self) -> str:
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.title or "note")
+            candidate = base
+            counter = 1
+            # houd slug uniek binnen Notes
+            while Note.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
+                counter += 1
+                candidate = f"{base}-{counter}"
+            self.slug = candidate
+        super().save(*args, **kwargs)

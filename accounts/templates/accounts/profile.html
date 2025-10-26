@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Profiel</h1>
+
+  <p><strong>Gebruikersnaam:</strong> {{ user_obj.username }}</p>
+
+  {% if user_obj.email %}
+    <p><strong>E-mail:</strong> {{ user_obj.email }}</p>
+  {% endif %}
+
+  <p><strong>Ingelogd sinds:</strong> {{ user_obj.last_login }}</p>
+
+  <hr>
+
+  <h2>Acties</h2>
+  <ul>
+    <li><a href="{% url 'notes:new' %}">Nieuwe notitie maken</a></li>
+    <li><a href="{% url 'notes:list' %}">Mijn notities bekijken</a></li>
+    <li><a href="{% url 'logout' %}">Uitloggen</a></li>
+  </ul>
+{% endblock %}

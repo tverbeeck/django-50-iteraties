@@ -1,11 +1,9 @@
 # home/urls.py
-from django.urls import include, path
-from . import views
-
-app_name = "home"  # <-- dit voegt de namespace 'home' toe
+from django.urls import path
+from .views import HomeDashboardView, HomeIndexView, AboutView
 
 urlpatterns = [
-    path("", views.home, name="home"),  # naam 'home:home'
-    path("about/", views.about, name="about"),  # naam 'home:about'
-    path("", include("home.urls", namespace="home")),
+    path("", HomeDashboardView.as_view(), name="home"),
+    path("index/", HomeIndexView.as_view(), name="home-index"),
+    path("about/", AboutView.as_view(), name="home-about"),
 ]

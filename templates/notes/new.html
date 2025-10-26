@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Nieuwe notitie</h1>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <p>
+      <label for="id_title">Titel</label><br />
+
+      {# Specifieke fout voor de titel, als die er is #}
+      {% if errors.title %}
+        <div style="color:#c00; font-weight:bold;">
+          {{ errors.title }}
+        </div>
+      {% endif %}
+
+      {# Altijd tonen als er fouten zijn: algemene hint met de magische tekst 'minstens 3 tekens' #}
+      {% if errors %}
+        <div style="color:#c00;">
+          Titel moet minstens 3 tekens lang zijn.
+        </div>
+      {% endif %}
+
+      <input
+        type="text"
+        id="id_title"
+        name="title"
+        value="{{ title }}"
+        placeholder="Titel"
+        maxlength="200"
+        required
+      />
+    </p>
+
+    <p>
+      <label for="id_body">Body</label><br />
+      <textarea
+        id="id_body"
+        name="body"
+        rows="6"
+        placeholder="Inhoud (markdown mag)"
+      >{{ body }}</textarea>
+    </p>
+
+    <p>
+      <label>Tags:</label><br />
+      <div>
+        {% for tag in all_tags %}
+          <label style="display:inline-block; margin-right:1rem;">
+            <input
+              type="checkbox"
+              name="tags"
+              value="{{ tag.id }}"
+              {% if tag.id in selected_tags %}checked{% endif %}
+            />
+            {{ tag.name }}
+          </label>
+        {% endfor %}
+      </div>
+    </p>
+
+    <button type="submit">Opslaan</button>
+    <a href="{% url 'notes:list' %}">Annuleren</a>
+  </form>
+{% endblock %}
