@@ -267,6 +267,8 @@ def note_new(request: HttpRequest) -> HttpResponse:
         if tag_ids:
             valid_tags = Tag.objects.filter(pk__in=[t for t in tag_ids if t.isdigit()])
             note.tags.set(valid_tags)
+        
+        messages.success(request, f'Notitie "{note.title}" is aangemaakt.')
 
         return redirect("notes:list")
 
@@ -337,6 +339,8 @@ def note_edit(request: HttpRequest, pk: int) -> HttpResponse:
             note.tags.set(Tag.objects.filter(pk__in=tag_ids))
         else:
             note.tags.clear()
+            
+        messages.success(request, f'Notitie "{note.title}" is bijgewerkt.')
 
         return redirect("notes:detail", pk=note.pk)
 
@@ -362,6 +366,8 @@ def note_delete(request: HttpRequest, pk: int) -> HttpResponse:
     """
     Verwijderen van een notitie.
     Alleen toegestaan als _user_can_manage(note, request.user) True is.
+    GET: bevestigingspagina
+    POST: verwijderen en redirect naar lijst met success message
     """
     note = get_object_or_404(Note, pk=pk)
 
@@ -369,8 +375,16 @@ def note_delete(request: HttpRequest, pk: int) -> HttpResponse:
         return HttpResponseForbidden("Niet jouw notitie.")
 
     if request.method == "POST":
+        title_for_msg = note.title
         note.delete()
+
+        messages.success(
+            request,
+            f'Notitie "{title_for_msg}" is verwijderd.',
+        )
+
         return redirect("notes:list")
+
 
     return render(
         request,
@@ -419,7 +433,8 @@ def duplicate_note(request: HttpRequest, pk: int) -> HttpResponse:
     Maak een kopie van een bestaande Note (incl. tags).
     Alleen toegestaan als _user_can_manage(note, request.user) True is.
     GET: toon confirm.
-    POST: maak duplicaat en redirect naar detail van de nieuwe note.
+    POST: maak duplicaat en redirect naar detail van de nieuwe note,
+          met success message.
     """
     original = get_object_or_404(Note.objects.prefetch_related("tags"), pk=pk)
 
@@ -438,6 +453,7 @@ def duplicate_note(request: HttpRequest, pk: int) -> HttpResponse:
             request,
             f'Notitie "{original.title}" is gedupliceerd als "{new_note.title}".',
         )
+
         return redirect("notes:detail", pk=new_note.pk)
 
     return render(
@@ -449,7 +465,7 @@ def duplicate_note(request: HttpRequest, pk: int) -> HttpResponse:
         },
         status=200,
     )
-
+    
 # ---------------------------------
 # (legacy) formulier-gebaseerde create view
 # ---------------------------------
