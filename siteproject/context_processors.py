@@ -16,6 +16,6 @@ def site_meta(request):
         dict: SITE_NAME en YEAR
     """
     return {
-        "SITE_NAME": "Django 50 iteraties",
+        "SITE_NAME": "mIwIkI",
         "YEAR": date.today().year,
     }

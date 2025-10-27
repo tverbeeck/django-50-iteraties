@@ -1,36 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Publieke notities — {{ SITE_NAME }}{% endblock %}
 {% block content %}
-  <h1>Publieke notities</h1>
 
-  <ul>
-    {% for n in notes %}
-      <li style="margin-bottom:.5rem;">
-        <a href="{% url 'notes:public_detail' n.pk %}">{{ n.title }}</a>
+<h1>Publieke notities</h1>
 
-        {% if n.tags.all %}
-          {% for t in n.tags.all %}
-            <span style="
-                display:inline-block;
-                padding:.1rem .4rem;
-                border:1px solid #ddd;
-                border-radius:.4rem;
-                font-size:.8rem;
-                margin-left:.4rem;
-                background-color:#f8f8f8;
-              ">
-              {{ t.name }}
-            </span>
-          {% endfor %}
-        {% endif %}
+<ul>
+  {% for n in notes %}
+    <li style="margin-bottom:.5rem;">
+      <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
 
-        <span style="color:#666;font-size:.8rem;margin-left:.5rem;">
-          (laatst gewijzigd {{ n.updated_at|date:"Y-m-d H:i" }})
-        </span>
-      </li>
-    {% empty %}
-      <li>Geen publieke notities.</li>
-    {% endfor %}
-  </ul>
+      <span
+        style="
+          display:inline-block;
+          padding:.2rem .4rem;
+          border:1px solid #070;
+          border-radius:.4rem;
+          font-size:.8rem;
+          margin-left:.5rem;
+          color:#fff;
+          background-color:#070;
+        "
+      >
+        openbaar
+      </span>
+
+      <small style="margin-left:.5rem; color:#555;">
+        Laatst gewijzigd {{ n.updated_at|date:"d/m/Y H:i" }}
+      </small>
+    </li>
+  {% empty %}
+    <li>Geen publieke notities.</li>
+  {% endfor %}
+</ul>
 
 {% endblock %}

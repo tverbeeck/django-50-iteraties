@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Notities — {{ SITE_NAME }}{% endblock %}
 {% block content %}
-  <h1>Notities</h1>
+  <h1>Mijn notities</h1>
 
   <p><a href="{% url 'notes:new' %}">Nieuwe notitie</a></p>
 
@@ -24,7 +24,7 @@
           {{ t.name }}
         </a>
       {% empty %}
-        <em style="margin-left:.5rem;">(nog geen tags)</em>
+        <em style="margin-left:.5rem;">Geen notities met tag</em>
       {% endfor %}
     </div>
 
@@ -57,28 +57,38 @@
   {% endif %}
 
   <ul>
-    {% for n in notes %}
-      <li style="margin-bottom: .5rem;">
-        <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
+  {% for n in notes %}
+    <li style="margin-bottom: .5rem;">
+      <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
 
-        {% if n.tags.all %}
-          {% for t in n.tags.all %}
-            <span style="
-                display:inline-block;
-                padding:.1rem .4rem;
-                border:1px solid #ddd;
-                border-radius:.4rem;
-                font-size:.8rem;
-                margin-left:.4rem;
-                background-color:#f8f8f8;
-              ">
-              {{ t.name }}
-            </span>
-          {% endfor %}
-        {% endif %}
-      </li>
-    {% empty %}
-      <li>Geen notities{% if active_tag %} met tag "{{ active_tag }}"{% endif %}{% if q %} die "{{ q }}" bevatten{% endif %}</li>
-    {% endfor %}
-  </ul>
+      {% if n.is_public %}
+        <span style="color:green; font-size:.8rem; margin-left:.4rem;">
+          (publiek)
+        </span>
+      {% endif %}
+
+      {% if n.tags.all %}
+        {% for t in n.tags.all %}
+          <span style="
+              display:inline-block;
+              padding:.1rem .4rem;
+              border:1px solid #ddd;
+              border-radius:.4rem;
+              font-size:.8rem;
+              margin-left:.4rem;
+              background-color:#f8f8f8;
+            ">
+            {{ t.name }}
+          </span>
+        {% endfor %}
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>
+      Geen notities met tag
+      {% if active_tag %} met tag "{{ active_tag }}"{% endif %}
+      {% if q %} die "{{ q }}" bevatten{% endif %}
+    </li>
+  {% endfor %}
+</ul>
 {% endblock %}

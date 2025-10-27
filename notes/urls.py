@@ -1,29 +1,32 @@
 from django.urls import path
 from .views import (
-    list_notes,
+    notes_list,
     note_new,  # <— belangrijk
-    detail_note,
-    edit_note,
-    delete_note,
+    note_detail,
+    note_edit,
+    note_delete,
+    
     duplicate_note,
-    public_list_notes,
+    public_list,
     public_detail_note,
     api_list_notes,
     api_new_note,
 )
 
+app_name = "notes"
+
 urlpatterns = [
     # lijst + zoeken/filter
-    path("", list_notes, name="list"),
+    path("", notes_list, name="list"), # /notes/
     # nieuwe note (login required + custom validatie)
-    path("new/", note_new, name="new"),
+    path("new/", note_new, name="new"), # /notes/new/
     # detail / edit / delete / duplicate
-    path("<int:pk>/", detail_note, name="detail"),
-    path("<int:pk>/edit/", edit_note, name="edit"),
-    path("<int:pk>/delete/", delete_note, name="delete"),
+    path("<int:pk>/", note_detail, name="detail"), # /notes/5/
+    path("<int:pk>/edit/", note_edit, name="edit"), # /notes/5/edit/
+    path("<int:pk>/delete/", note_delete, name="delete"), # /notes/5/delete/
     path("<int:pk>/duplicate/", duplicate_note, name="duplicate"),
     # publieke read-only views
-    path("pub/", public_list_notes, name="public_list"),
+    path("pub/", public_list, name="public_list"), # /notes/pub/
     path("pub/<int:pk>/", public_detail_note, name="public_detail"),
     # simpele JSON API
     path("api/list/", api_list_notes, name="api_list"),

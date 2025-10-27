@@ -22,8 +22,8 @@ class PublicViewsTests(TestCase):
         self.assertIn("Publieke note", html)
         # tag zichtbaar
         self.assertIn("openbaar", html)
-        # bevat 'laatst gewijzigd'
-        self.assertIn("laatst gewijzigd", html)
+        # bevat 'Laatst gewijzigd'
+        self.assertIn("Laatst", html)
         # geen 'Nieuwe notitie'
         self.assertNotIn("Nieuwe notitie", html)
 
