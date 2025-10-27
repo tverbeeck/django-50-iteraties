@@ -5,45 +5,257 @@
 {% block title %}{{ note.title }} — {{ SITE_NAME }}{% endblock %}
 
 {% block content %}
-  <article style="max-width:60ch;">
-    <header style="margin-bottom:1rem;">
-      <h1 style="margin:0;">{{ note.title }}</h1>
 
-      {% if note.owner %}
-        <p style="color:#555; font-size:.9rem; margin:.25rem 0 0 0;">
-          van <strong>{{ note.owner.username }}</strong>
-        </p>
-      {% endif %}
+  {# ---------- BOVENSTE ACTIEBALK / BREADCRUMBachtig ---------- #}
+  <nav
+    style="
+      display:flex;
+      flex-wrap:wrap;
+      gap:.75rem;
+      font-size:.9rem;
+      margin-bottom:1rem;
+    "
+  >
+    <a
+      href="{% url 'notes:list' %}"
+      style="
+        background:#f8f8f8;
+        border:1px solid #999;
+        border-radius:.4rem;
+        padding:.5rem .75rem;
+        text-decoration:none;
+        color:#000;
+      "
+    >
+      &larr; Terug naar lijst
+    </a>
 
-      {% if note.updated_at %}
-        <p style="color:#777; font-size:.8rem; margin:.25rem 0 0 0;">
-          Laatst bijgewerkt: {{ note.updated_at|date:"d/m/Y H:i" }}
-        </p>
-      {% endif %}
+    {% if can_manage %}
+      <a
+        href="{% url 'notes:edit' note.pk %}"
+        style="
+          background:#eee;
+          border:1px solid #999;
+          border-radius:.4rem;
+          padding:.5rem .75rem;
+          text-decoration:none;
+          color:#000;
+        "
+      >
+        Bewerk
+      </a>
+
+      <a
+        href="{% url 'notes:delete' note.pk %}"
+        style="
+          background:#fff0f0;
+          border:1px solid #c00;
+          border-radius:.4rem;
+          padding:.5rem .75rem;
+          text-decoration:none;
+          color:#900;
+        "
+      >
+        Verwijder
+      </a>
+
+      <a
+        href="{% url 'notes:duplicate' note.pk %}"
+        style="
+          background:#eef3ff;
+          border:1px solid #3355cc;
+          border-radius:.4rem;
+          padding:.5rem .75rem;
+          text-decoration:none;
+          color:#002266;
+        "
+      >
+        Dupliceer
+      </a>
+    {% endif %}
+  </nav>
+
+
+  {# ---------- HOOFDKAART MET TITEL / META ---------- #}
+  <article
+    style="
+      max-width:60ch;
+      background:#fdfdfd;
+      border:1px solid #ddd;
+      border-radius:.5rem;
+      box-shadow:0 2px 4px rgba(0,0,0,.04);
+    "
+  >
+    <header style="padding:1rem 1rem 0 1rem;">
+      <h1 style="margin:0 0 .5rem 0; font-size:1.6rem; line-height:1.3;">
+        {{ note.title }}
+
+        {# statusbadge rechts naast de titel: publiek / privé #}
+        {% if note.is_public %}
+          <span
+            style="
+              display:inline-block;
+              margin-left:.5rem;
+              font-size:.8rem;
+              line-height:1.2;
+              background:#e8fff0;
+              color:#065f2b;
+              border:1px solid #6ccf8e;
+              padding:.2rem .4rem;
+              border-radius:.4rem;
+              font-weight:500;
+              vertical-align:middle;
+            "
+          >
+            publiek
+          </span>
+        {% else %}
+          <span
+            style="
+              display:inline-block;
+              margin-left:.5rem;
+              font-size:.8rem;
+              line-height:1.2;
+              background:#fff4e8;
+              color:#7a3a00;
+              border:1px solid #e0a96a;
+              padding:.2rem .4rem;
+              border-radius:.4rem;
+              font-weight:500;
+              vertical-align:middle;
+            "
+          >
+            privé
+          </span>
+        {% endif %}
+      </h1>
+
+      {# eigenaar + timestamp #}
+      <div style="font-size:.9rem; color:#555; margin-bottom:.75rem;">
+        {% if note.owner %}
+          <div>van <strong>{{ note.owner.username }}</strong></div>
+        {% endif %}
+
+        {% if note.updated_at %}
+          <div style="color:#777; font-size:.8rem; margin-top:.25rem;">
+            Laatst bijgewerkt:
+            {{ note.updated_at|date:"d/m/Y H:i" }}
+          </div>
+        {% endif %}
+      </div>
     </header>
 
-    {# body/rendered_body: we tonen wat onze view al aanlevert #}
-    {% if rendered_body %}
-      <div class="note-body">
-        {{ rendered_body|safe }}
-      </div>
-    {% else %}
-      <div class="note-body">
-        {{ note.body|linebreaksbr }}
-      </div>
+    {# ---------- INHOUD ---------- #}
+    <div style="padding:0 1rem 1rem 1rem;">
+      {% if rendered_body %}
+        {# rendered_body is veilig gesaneerde markdown-html; we tonen 'm raw #}
+        <div class="note-body">
+          {{ rendered_body|safe }}
+        </div>
+      {% else %}
+        <div class="note-body" style="white-space:pre-line;">
+          {{ note.body }}
+        </div>
+      {% endif %}
+    </div>
+
+    {# ---------- TAGS ONDERAAN ---------- #}
+    {% if note.tags.all %}
+      <footer
+        style="
+          padding: .75rem 1rem 1rem 1rem;
+          border-top:1px solid #eee;
+          background:#fafafa;
+          border-radius:0 0 .5rem .5rem;
+          font-size:.9rem;
+        "
+      >
+        <div style="margin-bottom:.5rem; color:#444;">
+          Tags:
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem;">
+          {% for t in note.tags.all %}
+            <span
+              style="
+                display:inline-block;
+                padding:.25rem .5rem;
+                border:1px solid #ccc;
+                border-radius:.4rem;
+                background:#fff;
+                font-size:.8rem;
+              "
+            >
+              {{ t.name }}
+            </span>
+          {% endfor %}
+        </div>
+      </footer>
     {% endif %}
   </article>
 
+
+  {# ---------- ONDERSTE ACTIEBALK (de oude), voor gemak #}
   <hr style="margin:2rem 0;" />
 
   <nav style="display:flex; flex-wrap:wrap; gap:.75rem; font-size:.9rem;">
-    <a href="{% url 'notes:list' %}">&larr; Terug naar lijst</a>
+    <a
+      href="{% url 'notes:list' %}"
+      style="
+        background:#f8f8f8;
+        border:1px solid #999;
+        border-radius:.4rem;
+        padding:.5rem .75rem;
+        text-decoration:none;
+        color:#000;
+      "
+    >
+      &larr; Terug naar lijst
+    </a>
 
-    {# beheeracties -> alleen tonen als de view can_manage=True gezet heeft #}
     {% if can_manage %}
-      <a href="{% url 'notes:edit' note.pk %}">Bewerk</a>
-      <a href="{% url 'notes:delete' note.pk %}">Verwijder</a>
-      <a href="{% url 'notes:duplicate' note.pk %}">Dupliceer</a>
+      <a
+        href="{% url 'notes:edit' note.pk %}"
+        style="
+          background:#eee;
+          border:1px solid #999;
+          border-radius:.4rem;
+          padding:.5rem .75rem;
+          text-decoration:none;
+          color:#000;
+        "
+      >
+        Bewerk
+      </a>
+
+      <a
+        href="{% url 'notes:delete' note.pk %}"
+        style="
+          background:#fff0f0;
+          border:1px solid #c00;
+          border-radius:.4rem;
+          padding:.5rem .75rem;
+          text-decoration:none;
+          color:#900;
+        "
+      >
+        Verwijder
+      </a>
+
+      <a
+        href="{% url 'notes:duplicate' note.pk %}"
+        style="
+          background:#eef3ff;
+          border:1px solid #3355cc;
+          border-radius:.4rem;
+          padding:.5rem .75rem;
+          text-decoration:none;
+          color:#002266;
+        "
+      >
+        Dupliceer
+      </a>
     {% endif %}
   </nav>
+
 {% endblock %}
+
