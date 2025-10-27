@@ -57,38 +57,48 @@
   {% endif %}
 
   <ul>
-  {% for n in notes %}
-    <li style="margin-bottom: .5rem;">
-      <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
+    {% for n in notes %}
+      <li style="margin-bottom: .5rem;">
+        <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
 
-      {% if n.is_public %}
-        <span style="color:green; font-size:.8rem; margin-left:.4rem;">
-          (publiek)
-        </span>
-      {% endif %}
-
-      {% if n.tags.all %}
-        {% for t in n.tags.all %}
-          <span style="
-              display:inline-block;
-              padding:.1rem .4rem;
-              border:1px solid #ddd;
-              border-radius:.4rem;
-              font-size:.8rem;
-              margin-left:.4rem;
-              background-color:#f8f8f8;
-            ">
-            {{ t.name }}
+        {% if n.is_public %}
+          <span style="color:green; font-size:.8rem; margin-left:.4rem;">
+            (publiek)
           </span>
-        {% endfor %}
-      {% endif %}
-    </li>
-  {% empty %}
-    <li>
-      Geen notities met tag
-      {% if active_tag %} met tag "{{ active_tag }}"{% endif %}
-      {% if q %} die "{{ q }}" bevatten{% endif %}
-    </li>
-  {% endfor %}
-</ul>
+        {% endif %}
+
+        {% if n.tags.all %}
+          {% for t in n.tags.all %}
+            <span style="
+                display:inline-block;
+                padding:.1rem .4rem;
+                border:1px solid #ddd;
+                border-radius:.4rem;
+                font-size:.8rem;
+                margin-left:.4rem;
+                background-color:#f8f8f8;
+              ">
+              {{ t.name }}
+            </span>
+          {% endfor %}
+        {% endif %}
+
+        {% if n.owner %}
+          <span style="
+              margin-left:.6rem;
+              font-size:.8rem;
+              color:#555;
+            ">
+            — {{ n.owner.username }}
+          </span>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>
+        Geen notities met tag
+        {% if active_tag %} met tag "{{ active_tag }}"{% endif %}
+        {% if q %} die "{{ q }}" bevatten{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}
