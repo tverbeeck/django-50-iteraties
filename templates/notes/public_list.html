@@ -2,35 +2,52 @@
 {% block title %}Publieke notities — {{ SITE_NAME }}{% endblock %}
 {% block content %}
 
-<h1>Publieke notities</h1>
+  <h1>Publieke notities</h1>
 
-<ul>
-  {% for n in notes %}
-    <li style="margin-bottom:.5rem;">
-      <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
+  <ul>
+    {% for n in notes %}
+      <li style="margin-bottom:.5rem;">
 
-      <span
-        style="
-          display:inline-block;
-          padding:.2rem .4rem;
-          border:1px solid #070;
-          border-radius:.4rem;
-          font-size:.8rem;
-          margin-left:.5rem;
-          color:#fff;
-          background-color:#070;
-        "
-      >
-        openbaar
-      </span>
+        {# titel van de publieke note #}
+        <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
 
-      <small style="margin-left:.5rem; color:#555;">
-        Laatst gewijzigd {{ n.updated_at|date:"d/m/Y H:i" }}
-      </small>
-    </li>
-  {% empty %}
-    <li>Geen publieke notities.</li>
-  {% endfor %}
-</ul>
+        {# badge die aangeeft dat deze note publiek is #}
+        <span
+          style="
+            display:inline-block;
+            padding:.2rem .4rem;
+            border:1px solid #070;
+            border-radius:.4rem;
+            font-size:.8rem;
+            margin-left:.5rem;
+            color:#fff;
+            background-color:#070;
+          "
+        >
+          openbaar
+        </span>
+
+        {# optioneel: eigenaar tonen, als die er is #}
+        {% if n.owner %}
+          <span style="
+              margin-left:.6rem;
+              font-size:.8rem;
+              color:#555;
+            ">
+            — {{ n.owner.username }}
+          </span>
+        {% endif %}
+
+        {# timestamp, tekst MOET 'Laatst gewijzigd' blijven heten voor de tests #}
+        <small style="margin-left:.5rem; color:#555;">
+          Laatst gewijzigd {{ n.updated_at|date:"d/m/Y H:i" }}
+        </small>
+
+      </li>
+    {% empty %}
+      <li>Geen publieke notities.</li>
+    {% endfor %}
+  </ul>
 
 {% endblock %}
+
