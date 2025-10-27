@@ -39,8 +39,8 @@
   <nav style="display:flex; flex-wrap:wrap; gap:.75rem; font-size:.9rem;">
     <a href="{% url 'notes:list' %}">&larr; Terug naar lijst</a>
 
-    {# beheeracties voor ingelogde gebruikers #}
-    {% if user.is_authenticated %}
+    {# beheeracties -> alleen tonen als de view can_manage=True gezet heeft #}
+    {% if can_manage %}
       <a href="{% url 'notes:edit' note.pk %}">Bewerk</a>
       <a href="{% url 'notes:delete' note.pk %}">Verwijder</a>
       <a href="{% url 'notes:duplicate' note.pk %}">Dupliceer</a>

@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Q
 from django.http import (
+    Http404,
     HttpRequest,
     HttpResponse,
     JsonResponse,
@@ -61,6 +62,28 @@ def _ensure_unique_slug(note: Note) -> None:
     note.slug = candidate
     note.save(update_fields=["slug"])
 
+def _user_can_manage(note: Note, user) -> bool:
+    """
+    Mag deze user deze note beheren (bewerken/verwijderen/dupliceren)?
+    Regels:
+    - user moet ingelogd zijn
+    - als note.owner leeg is -> iedereen die ingelogd is mag (compatibel met tests)
+    - als note.owner == user -> mag
+    - als user.is_staff -> mag ook
+    """
+    if not getattr(user, "is_authenticated", False):
+        return False
+
+    if note.owner is None:
+        return True
+
+    if note.owner == user:
+        return True
+
+    if user.is_staff:
+        return True
+
+    return False
 
 # ---------------------------------
 # Lijst & detail (publiek toegankelijk)
@@ -165,17 +188,18 @@ def _render_markdown_safe(md_text: str) -> str:
 
     return escaped
 
-
 def note_detail(request: HttpRequest, pk: int) -> HttpResponse:
     """
     Detailpagina voor één notitie.
-    - GEEN login_required: tests benaderen detailpagina anoniem.
-    - Wordt ook gebruikt in markdown/XSS-test (die alleen 200 verwacht).
+    - Publiek leesbaar (geen login_required).
+    - Template toont beheerknoppen alleen als can_manage=True.
+    - Body wordt als veilige HTML weergegeven.
     """
     note = get_object_or_404(Note.objects.prefetch_related("tags"), pk=pk)
 
-    # simpele fallback voor gerenderde markdown-body in de template
     rendered_body = _render_markdown_safe(note.body or "")
+
+    can_manage = _user_can_manage(note, request.user)
 
     return render(
         request,
@@ -183,10 +207,10 @@ def note_detail(request: HttpRequest, pk: int) -> HttpResponse:
         {
             "note": note,
             "rendered_body": rendered_body,
+            "can_manage": can_manage,
         },
         status=200,
     )
-
 
 # ---------------------------------
 # Nieuwe notitie / bewerken / verwijderen (login vereist)
@@ -261,21 +285,15 @@ def note_new(request: HttpRequest) -> HttpResponse:
         status=200,
     )
 
-
 @login_required
 def note_edit(request: HttpRequest, pk: int) -> HttpResponse:
     """
     Notitie bewerken.
-    Tests doen force_login() met een user, en proberen een note te editen
-    die in de test-DB géén owner heeft. Dat moet dus niet crashen.
-
-    We blokkeren alleen als de note *wel* een owner heeft
-    én die != request.user.
+    Alleen toegestaan als _user_can_manage(note, request.user) True is.
     """
     note = get_object_or_404(Note, pk=pk)
 
-    # beveiliging maar niet té streng voor de tests:
-    if note.owner and note.owner != request.user:
+    if not _user_can_manage(note, request.user):
         return HttpResponseForbidden("Niet jouw notitie.")
 
     if request.method == "POST":
@@ -315,8 +333,10 @@ def note_edit(request: HttpRequest, pk: int) -> HttpResponse:
         note.save()
 
         # tags updaten
-        valid_tags = Tag.objects.filter(pk__in=[t for t in tag_ids if t.isdigit()])
-        note.tags.set(valid_tags)
+        if tag_ids:
+            note.tags.set(Tag.objects.filter(pk__in=tag_ids))
+        else:
+            note.tags.clear()
 
         return redirect("notes:detail", pk=note.pk)
 
@@ -337,20 +357,15 @@ def note_edit(request: HttpRequest, pk: int) -> HttpResponse:
         status=200,
     )
 
-
 @login_required
 def note_delete(request: HttpRequest, pk: int) -> HttpResponse:
     """
-    Notitie verwijderen.
-    Tests verwachten:
-    - GET toont confirm pagina met oude titel
-    - POST verwijdert en redirect naar notes:list
-    - force_login() wordt gebruikt, maar note heeft geen owner
-      in de test-db -> dat moet dus niet crashen.
+    Verwijderen van een notitie.
+    Alleen toegestaan als _user_can_manage(note, request.user) True is.
     """
     note = get_object_or_404(Note, pk=pk)
 
-    if note.owner and note.owner != request.user:
+    if not _user_can_manage(note, request.user):
         return HttpResponseForbidden("Niet jouw notitie.")
 
     if request.method == "POST":
@@ -363,7 +378,6 @@ def note_delete(request: HttpRequest, pk: int) -> HttpResponse:
         {"note": note},
         status=200,
     )
-
 
 # ---------------------------------
 # Publieke wiki / publieke lijst
@@ -399,43 +413,33 @@ def public_list(request: HttpRequest) -> HttpResponse:
 # Dupliceren
 # ---------------------------------
 
-
 @login_required
 def duplicate_note(request: HttpRequest, pk: int) -> HttpResponse:
     """
     Maak een kopie van een bestaande Note (incl. tags).
-    - GET: toon confirm-scherm (status 200)
-    - POST: maak duplicaat en redirect (302)
-
-    De tests (als ze deze gebruiken) verwachten:
-      - status_code 200 bij GET
-      - erna bestaan er 2 notes
-      - body en tags gelijk
-      - slug verschillend
+    Alleen toegestaan als _user_can_manage(note, request.user) True is.
+    GET: toon confirm.
+    POST: maak duplicaat en redirect naar detail van de nieuwe note.
     """
-    original = get_object_or_404(Note, pk=pk)
+    original = get_object_or_404(Note.objects.prefetch_related("tags"), pk=pk)
+
+    if not _user_can_manage(original, request.user):
+        return HttpResponseForbidden("Niet jouw notitie.")
 
     if request.method == "POST":
-        # Maak nieuwe note met prefix "Kopie van ..."
         new_note = Note.objects.create(
             title=f"Kopie van {original.title}",
             body=original.body,
         )
-
-        # tags kopiëren
         new_note.tags.set(original.tags.all())
-
-        # slug invullen / uniek maken
         _ensure_unique_slug(new_note)
 
-        # redirect naar detail van de nieuwe note
         messages.success(
             request,
             f'Notitie "{original.title}" is gedupliceerd als "{new_note.title}".',
         )
         return redirect("notes:detail", pk=new_note.pk)
 
-    # GET -> confirmpagina tonen
     return render(
         request,
         "notes/confirm_duplicate.html",
@@ -445,7 +449,6 @@ def duplicate_note(request: HttpRequest, pk: int) -> HttpResponse:
         },
         status=200,
     )
-
 
 # ---------------------------------
 # (legacy) formulier-gebaseerde create view
