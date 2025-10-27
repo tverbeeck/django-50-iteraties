@@ -5,56 +5,45 @@
 {% block title %}{{ note.title }} — {{ SITE_NAME }}{% endblock %}
 
 {% block content %}
-  <h1>{{ note.title }}</h1>
+  <article style="max-width:60ch;">
+    <header style="margin-bottom:1rem;">
+      <h1 style="margin:0;">{{ note.title }}</h1>
 
-  <!-- nieuw: laad onze markdown CSS -->
-  <link rel="stylesheet" href="{% static 'css/markdown.css' %}">
-
-  {% if note.body %}
-    <div class="note-body">
-      {{ note.body|markdownify }}
-    </div>
-  {% else %}
-    <p><em>Geen inhoud</em></p>
-  {% endif %}
-
-  {% if note.tags.all %}
-    <p>
-      Tags:
-      {% for t in note.tags.all %}
-        <span style="
-            display:inline-block;
-            padding:.1rem .4rem;
-            border:1px solid #ddd;
-            border-radius:.4rem;
-            font-size:.8rem;
-            margin-right:.4rem;
-            background-color:#f8f8f8;
-          ">
-          {{ t.name }}
-        </span>
-      {% endfor %}
-    </p>
-  {% endif %}
-    {% if note.created_at or note.updated_at %}
-    <p style="font-size:.8rem; color:#666; margin-top:1rem;">
-      {% if note.created_at %}
-        Aangemaakt op:
-        {{ note.created_at|date:"Y-m-d H:i" }}.
+      {% if note.owner %}
+        <p style="color:#555; font-size:.9rem; margin:.25rem 0 0 0;">
+          van <strong>{{ note.owner.username }}</strong>
+        </p>
       {% endif %}
+
       {% if note.updated_at %}
-        Laatst gewijzigd op:
-        {{ note.updated_at|date:"Y-m-d H:i" }}.
+        <p style="color:#777; font-size:.8rem; margin:.25rem 0 0 0;">
+          Laatst bijgewerkt: {{ note.updated_at|date:"d/m/Y H:i" }}
+        </p>
       {% endif %}
-    </p>
-  {% endif %}
+    </header>
 
+    {# body/rendered_body: we tonen wat onze view al aanlevert #}
+    {% if rendered_body %}
+      <div class="note-body">
+        {{ rendered_body|safe }}
+      </div>
+    {% else %}
+      <div class="note-body">
+        {{ note.body|linebreaksbr }}
+      </div>
+    {% endif %}
+  </article>
 
-  <p style="margin-top:2rem; font-size:.9rem;">
-    <a href="{% url 'notes:edit' note.pk %}">Bewerken</a> ·
-    <a href="{% url 'notes:duplicate' note.pk %}">Dupliceren</a> ·
-    <a href="{% url 'notes:delete' note.pk %}" style="color:#c00;">Verwijderen</a>
-  </p>
+  <hr style="margin:2rem 0;" />
 
-  <p><a href="{% url 'notes:list' %}">← Terug naar overzicht</a></p>
+  <nav style="display:flex; flex-wrap:wrap; gap:.75rem; font-size:.9rem;">
+    <a href="{% url 'notes:list' %}">&larr; Terug naar lijst</a>
+
+    {# beheeracties voor ingelogde gebruikers #}
+    {% if user.is_authenticated %}
+      <a href="{% url 'notes:edit' note.pk %}">Bewerk</a>
+      <a href="{% url 'notes:delete' note.pk %}">Verwijder</a>
+      <a href="{% url 'notes:duplicate' note.pk %}">Dupliceer</a>
+    {% endif %}
+  </nav>
 {% endblock %}
