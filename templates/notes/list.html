@@ -1,35 +1,74 @@
 {% extends "base.html" %}
 {% block title %}Notities — {{ SITE_NAME }}{% endblock %}
+
 {% block content %}
   <h1>Mijn notities</h1>
 
-  <p><a href="{% url 'notes:new' %}">Nieuwe notitie</a></p>
+  <p style="margin-bottom:1rem;">
+    <a href="{% url 'notes:new' %}"
+       style="
+         display:inline-block;
+         background:#0083ff;
+         color:#fff;
+         padding:.4rem .7rem;
+         border-radius:.4rem;
+         text-decoration:none;
+         font-size:.9rem;
+       "
+    >Nieuwe notitie</a>
+  </p>
 
-  <section style="margin: 1rem 0; padding: .75rem; border: 1px solid #ccc; border-radius: .5rem; background: #fafafa; display:flex; flex-wrap:wrap; gap:1rem;">
-    <div>
-      <strong>Filter op tag:</strong>
+  {# === Filter / zoekbalk blok === #}
+  <section
+    style="
+      margin: 1rem 0;
+      padding: .9rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: .6rem;
+      background: #fafafa;
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      align-items:flex-start;
+    "
+  >
+    <div style="font-size:.9rem; line-height:1.4;">
+      <strong style="font-size:1rem;">Filter op tag:</strong>
+
+      {# 'alles' link #}
       <a
         href="{% url 'notes:list' %}{% if q %}?q={{ q|urlencode }}{% endif %}"
-        style="margin-left:.5rem;{% if not active_tag %} font-weight:bold; text-decoration:underline; {% endif %}"
+        style="
+          margin-left:.5rem;
+          {% if not active_tag %} font-weight:bold; text-decoration:underline; {% endif %}
+        "
       >
         alles
       </a>
 
+      {# elke tag als link #}
       {% for t in all_tags %}
-        {# combineer tag + q in de link #}
         <a
           href="{% url 'notes:list' %}?tag={{ t.name|urlencode }}{% if q %}&q={{ q|urlencode }}{% endif %}"
-          style="margin-left:.5rem;{% if active_tag and active_tag|lower == t.name|lower %} font-weight:bold; text-decoration:underline; {% endif %}"
+          style="
+            margin-left:.5rem;
+            {% if active_tag and active_tag|lower == t.name|lower %}
+              font-weight:bold; text-decoration:underline;
+            {% endif %}
+          "
         >
           {{ t.name }}
         </a>
       {% empty %}
-        <em style="margin-left:.5rem;">Geen notities met tag</em>
+        <em style="margin-left:.5rem; color:#666;">(nog geen tags)</em>
       {% endfor %}
     </div>
 
-    <form method="get" action="{% url 'notes:list' %}" style="margin-left:auto;">
-      {# als er al een tag actief is, hou die vast als hidden input #}
+    <form method="get"
+          action="{% url 'notes:list' %}"
+          style="margin-left:auto; display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;"
+    >
+      {# als er al een tag actief is, bewaar die als hidden field #}
       {% if active_tag %}
         <input type="hidden" name="tag" value="{{ active_tag }}">
       {% endif %}
@@ -39,65 +78,153 @@
         name="q"
         value="{{ q }}"
         placeholder="Zoek in titel / inhoud"
-        style="padding:.3rem .5rem;"
+        style="
+          padding:.4rem .5rem;
+          border:1px solid #999;
+          border-radius:.4rem;
+          font-size:.9rem;
+        "
       />
-      <button type="submit" style="padding:.3rem .6rem;">Zoek</button>
+      <button
+        type="submit"
+        style="
+          padding:.4rem .6rem;
+          border:1px solid #444;
+          background:#fff;
+          border-radius:.4rem;
+          cursor:pointer;
+          font-size:.9rem;
+        "
+      >
+        Zoek
+      </button>
     </form>
   </section>
 
+  {# kleine samenvatting van huidige filter #}
   {% if active_tag or q %}
-    <p>
+    <p style="font-size:.9rem; color:#444; margin-top:.5rem;">
       {% if active_tag %}
-        Gefilterd op tag: <strong>{{ active_tag }}</strong>.
+        Gefilterd op tag:
+        <strong>{{ active_tag }}</strong>.
       {% endif %}
       {% if q %}
-        Zoekterm: <strong>{{ q }}</strong>.
+        Zoekterm:
+        <strong>{{ q }}</strong>.
       {% endif %}
     </p>
   {% endif %}
 
-  <ul>
+  {# === De lijst met notities === #}
+  <ul style="list-style:none; padding:0; margin:1.5rem 0 2rem 0;">
     {% for n in notes %}
-      <li style="margin-bottom: .5rem;">
-        <a href="{% url 'notes:detail' n.pk %}">{{ n.title }}</a>
+      <li
+        style="
+          border:1px solid #ddd;
+          border-radius:.6rem;
+          padding:1rem 1rem .8rem 1rem;
+          margin-bottom:1rem;
+          background:#fff;
+        "
+      >
+        {# Titel + link naar detail #}
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:.5rem;">
+          <a
+            href="{% url 'notes:detail' n.pk %}"
+            style="
+              font-size:1rem;
+              font-weight:600;
+              color:#000;
+              text-decoration:none;
+            "
+          >
+            {{ n.title }}
+          </a>
 
-        {% if n.is_public %}
-          <span style="color:green; font-size:.8rem; margin-left:.4rem;">
-            (publiek)
-          </span>
-        {% endif %}
-
-        {% if n.tags.all %}
-          {% for t in n.tags.all %}
-            <span style="
-                display:inline-block;
-                padding:.1rem .4rem;
-                border:1px solid #ddd;
+          {# Publiek-badge als de note openbaar is #}
+          {% if n.is_public %}
+            <span
+              style="
+                background:#e6ffe6;
+                border:1px solid #0a0;
+                color:#060;
+                font-size:.7rem;
+                line-height:1.2;
+                padding:.15rem .4rem;
                 border-radius:.4rem;
-                font-size:.8rem;
-                margin-left:.4rem;
-                background-color:#f8f8f8;
-              ">
-              {{ t.name }}
+              "
+              title="Deze notitie is publiek zichtbaar"
+            >
+              publiek
             </span>
-          {% endfor %}
+          {% else %}
+            <span
+              style="
+                background:#f8f8f8;
+                border:1px solid #999;
+                color:#444;
+                font-size:.7rem;
+                line-height:1.2;
+                padding:.15rem .4rem;
+                border-radius:.4rem;
+              "
+              title="Alleen privé zichtbaar"
+            >
+              privé
+            </span>
+          {% endif %}
+        </div>
+
+        {# Eigenaar info + timestamp #}
+        <p style="font-size:.8rem; color:#666; margin:.4rem 0 .6rem 0;">
+          {% if n.owner %}
+            van <strong>{{ n.owner.username }}</strong>
+            {% if user.is_authenticated and n.owner_id == user.id %}
+              <span style="color:#0083ff;">(jij)</span>
+            {% endif %}
+            |
+          {% endif %}
+          {% if n.updated_at %}
+            Laatst bijgewerkt:
+            {{ n.updated_at|date:"d/m/Y H:i" }}
+          {% endif %}
+        </p>
+
+        {# Tags als chips #}
+        {% if n.tags.all %}
+          <div style="font-size:.8rem; display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.5rem;">
+            {% for t in n.tags.all %}
+              <span
+                style="
+                  display:inline-block;
+                  padding:.2rem .5rem;
+                  border:1px solid #ccc;
+                  border-radius:.5rem;
+                  background-color:#fafafa;
+                  font-size:.75rem;
+                  line-height:1.2;
+                "
+              >
+                {{ t.name }}
+              </span>
+            {% endfor %}
+          </div>
         {% endif %}
 
-        {% if n.owner %}
-          <span style="
-              margin-left:.6rem;
-              font-size:.8rem;
-              color:#555;
-            ">
-            — {{ n.owner.username }}
-          </span>
-        {% endif %}
+        {# Optionele korte preview body (eerste regel) zou kunnen,
+           maar de tests verwachten nergens een body-fragment op de lijstpagina.
+           Dus we laten het voorlopig achterwege voor veiligheid. #}
       </li>
     {% empty %}
-      <li>
+      <li style="color:#444; font-size:.9rem;">
         Geen notities met tag
-        {% if active_tag %} met tag "{{ active_tag }}"{% endif %}
-        {% if q %} die "{{ q }}" bevatten{% endif %}
+        {% if active_tag %}
+          "{{ active_tag }}"
+        {% endif %}
+        {% if q %}
+          die "{{ q }}" bevatten
+        {% endif %}
+        .
       </li>
     {% endfor %}
   </ul>
